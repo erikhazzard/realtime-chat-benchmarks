@@ -12,22 +12,22 @@ function format (val){
 }
 
 var statsId = setInterval(function () {
-    console.log('Memory Usage :: '.bold.green +
+    console.log('Memory Usage :: '.bold.green.inverse +
         ("\tRSS: " + format(process.memoryUsage().rss)).blue +
         ("\tHeap Total: " + format(process.memoryUsage().heapTotal)).red +
         ("\t\tHeap Used: " + format(process.memoryUsage().heapUsed)).magenta
     );
-}, 1000);
+}, 1500);
 
 // Websocket server
 // --------------------------------------
 var numClients = 0;
 wsServer.on('connection', function (ws) {
     numClients++;
-    console.log("Client connected! : ", numClients);
+    console.log(("Client connected! : ".bold + numClients).green);
 
     ws.on('message', function (message) {
-        console.log('received message: %s', message);
+        console.log(("\treceived message: ".bold + message).blue);
     });
 
     ws.on('close', function () {
