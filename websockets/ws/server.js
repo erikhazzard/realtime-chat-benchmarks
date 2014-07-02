@@ -3,12 +3,14 @@ var WebSocketServer = require('ws').Server,
 
 var numClients = 0;
 
+console.log("Server starting");
+
 wsServer.on('connection', function(ws) {
     numClients++;
     console.log("Client connected! : ", numClients);
 
     ws.on('message', function(message) {
-        console.log('received: %s', message);
+        console.log('received message: %s', message);
     });
 
     //// Send a message...
