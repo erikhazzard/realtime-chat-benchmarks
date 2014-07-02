@@ -16,7 +16,7 @@ if (cluster.isMaster) {
     var statsId = setInterval(function () {
         console.log('Memory Usage :: '.bold.green.inverse +
             ("\tRSS: " + format(process.memoryUsage().rss)).blue +
-            ("\tHeap Total: " + format(process.memoryUsage().heapTotal)).red +
+            ("\tHeap Total: " + format(process.memoryUsage().heapTotal)).yellow +
             ("\t\tHeap Used: " + format(process.memoryUsage().heapUsed)).magenta
         );
     }, 1500);
@@ -36,8 +36,10 @@ if (cluster.isMaster) {
         wsServer = new WebSocketServer({port: 3000});
 
     var numClients = 0;
+
     wsServer.on('connection', function (ws) {
         numClients++;
+
         console.log(("Client connected! : ".bold + numClients).green + 
             '| worker: ' + cluster.worker.id);
 
@@ -49,7 +51,7 @@ if (cluster.isMaster) {
 
         ws.on('close', function () {
             numClients--;
-            console.log('Disconnected : ', numClients +
+            console.log('Disconnected : '.red, numClients +
                 '| worker: ' + cluster.worker.id);
         });
 

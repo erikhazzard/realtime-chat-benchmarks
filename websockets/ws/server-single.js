@@ -14,7 +14,7 @@ function format (val){
 var statsId = setInterval(function () {
     console.log('Memory Usage :: '.bold.green.inverse +
         ("\tRSS: " + format(process.memoryUsage().rss)).blue +
-        ("\tHeap Total: " + format(process.memoryUsage().heapTotal)).red +
+        ("\tHeap Total: " + format(process.memoryUsage().heapTotal)).yellow +
         ("\t\tHeap Used: " + format(process.memoryUsage().heapUsed)).magenta
     );
 }, 1500);
@@ -22,6 +22,7 @@ var statsId = setInterval(function () {
 // Websocket server
 // --------------------------------------
 var numClients = 0;
+
 wsServer.on('connection', function (ws) {
     numClients++;
     console.log(("Client connected! : ".bold + numClients).green);
@@ -33,7 +34,8 @@ wsServer.on('connection', function (ws) {
 
     ws.on('close', function () {
         numClients--;
-        console.log('Disconnected : ', numClients);
+        console.log('Disconnected : '.red, numClients);
+        ws.close();
     });
 
     ws.on('error', function(e) {

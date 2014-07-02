@@ -4,6 +4,7 @@
   "version": "0.0.0",
   "author": "Erik Hazzard <enoex1@gmail.com>",
   "dependencies": {
+    "async": "^0.9.0",
     "colors": "*",
     "memwatch": "^0.2.2",
     "mosca": "^0.21.9",
