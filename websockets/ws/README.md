@@ -3,7 +3,10 @@ Notes...
 
 ## Limits
 
-### Out of box, no additional config
+
+### Single Server, unclustered
+** Out of box, no additional config **
+
 With server-single.js and cilent-connections-single.js, out of the box it supports around 2,000 clients before throwing an error: 
 
 
@@ -14,3 +17,7 @@ With server-single.js and cilent-connections-single.js, out of the box it suppor
     Error: getaddrinfo ENOTFOUND
         at errnoException (dns.js:37:11)
         at Object.onanswer [as oncomplete] (dns.js:124:16)
+
+
+** ulimit -n 9999 **
+Will allow single server to reach ~4800 connections
