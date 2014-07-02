@@ -4,6 +4,7 @@
   "version": "0.0.0",
   "author": "Erik Hazzard <enoex1@gmail.com>",
   "dependencies": {
+    "memwatch": "^0.2.2",
     "mosca": "^0.21.9",
     "mqtt": "^0.3.10",
     "rsync": "^0.3.0",
