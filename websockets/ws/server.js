@@ -28,6 +28,7 @@ wsServer.on('connection', function (ws) {
 
     ws.on('message', function (message) {
         console.log(("\treceived message: ".bold + message).blue);
+        ws.send('' + (+new Date()) );
     });
 
     ws.on('close', function () {
@@ -35,6 +36,10 @@ wsServer.on('connection', function (ws) {
         console.log('Disconnected : ', numClients);
     });
 
-    //// Send a message...
-    //ws.send('something');
+    ws.on('error', function(e) {
+        console.log(('Client #%d error: %s', thisId, e.message).bold.red);
+    });
+
+    // Send a message...
+    //ws.send('' + (+new Date()) );
 });
