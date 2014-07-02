@@ -39,7 +39,4 @@ wsServer.on('connection', function (ws) {
     ws.on('error', function(e) {
         console.log(('Client #%d error: %s', thisId, e.message).bold.red);
     });
-
-    // Send a message...
-    //ws.send('' + (+new Date()) );
 });
