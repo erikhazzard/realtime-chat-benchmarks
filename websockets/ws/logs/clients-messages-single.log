@@ -1,0 +1,11 @@
+{"level":"verbose","message":"test sent at 1404423419333","timestamp":"2014-07-03T21:36:59.335Z"}
+{"level":"verbose","message":"Broadcasting message: test at 1404423419337","timestamp":"2014-07-03T21:36:59.338Z"}
+{"level":"verbose","message":"Finished receiving test at 1404423419831","timestamp":"2014-07-03T21:36:59.831Z"}
+{"level":"verbose","message":"test sent at 1404423446677","timestamp":"2014-07-03T21:37:26.679Z"}
+{"level":"verbose","message":"Broadcasting message: test at 1404423446681","timestamp":"2014-07-03T21:37:26.682Z"}
+{"level":"verbose","message":"Finished receiving test at 1404423447194","timestamp":"2014-07-03T21:37:27.194Z"}
+{"level":"verbose","message":"Finished receiving test at 1404423447196","timestamp":"2014-07-03T21:37:27.196Z"}
+{"level":"verbose","message":"test sent at 1404423519739","timestamp":"2014-07-03T21:38:39.741Z"}
+{"level":"verbose","message":"Broadcasting message: test at 1404423519738","timestamp":"2014-07-03T21:38:39.740Z"}
+{"level":"verbose","message":"Finished receiving test at 1404423525270","timestamp":"2014-07-03T21:38:45.271Z"}
+{"level":"verbose","message":"Finished receiving test at 1404423525272","timestamp":"2014-07-03T21:38:45.272Z"}

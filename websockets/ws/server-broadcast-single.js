@@ -1,3 +1,11 @@
+/**
+ *
+ *  Broadcasts a messages intermittently to all clients of the ws server
+ *  Records the total number of client closes and errors and reports them
+ *  if they exist
+ *
+ */
+
 require("http").globalAgent.maxSockets = Infinity;
 var WebSocketServer = require('ws').Server,
     wsServer = new WebSocketServer({port: 3000});
@@ -33,11 +41,8 @@ wsServer.on('connection', function (ws) {
     }
 
     ws.on('message', function (message) {
-        console.log(("\treceived message: ".bold + message).blue);
-
-        // relay message back to see how long it takes
-        ws.send(message);
-        //ws.send('' + (+new Date()) );
+        // console.log(("\treceived message: ".bold + message).blue);
+        // ws.send('' + (+new Date()) );
     });
 
     ws.on('close', function () {
@@ -54,3 +59,20 @@ wsServer.on('connection', function (ws) {
         console.log(('Client #%d error: %s', thisId, e.message).bold.red);
     });
 });
+
+wsServer.broadcast = function(data) {
+    console.log("Broadcasting " + data + " to " + numClients + " clients.");
+    for (var i in this.clients) {
+        this.clients[i].send(data);
+    }
+
+    console.log("Finished broadcasting " + data + " to " + numClients + " clients.");
+};
+
+setInterval(function() {
+    // Routinely broadcast a message to all clients
+
+    console.log("Broadcasting...");
+    wsServer.broadcast("hello");
+
+}, 2000);

@@ -1,7 +1,27 @@
+/**
+ *
+ *  sever-single-broadcast-back
+ *
+ *  Broadcasts all received messages to all connected clients and logs the
+ *  time to see how long it takes for a message to propagate from a
+ *  client to all clients
+ *
+ */
+
 require("http").globalAgent.maxSockets = Infinity;
 var WebSocketServer = require('ws').Server,
     wsServer = new WebSocketServer({port: 3000});
 var colors = require('colors');
+var winston = require('winston');
+
+var logger = new (winston.Logger) ({
+    transports: [
+        new (winston.transports.File) ({
+            filename: 'logs/clients-messages-single.log',
+            level: 'verbose'
+        })
+    ]
+});
 
 console.log("\t\t\tWS Server starting".bold.blue);
 console.log("================================================================");
@@ -26,6 +46,17 @@ var numClients = 0,
     numCloses = 0,
     numErrors = 0;
 
+
+wsServer.broadcast = function(data) {
+    console.log("Broadcasting " + data + " to " + numClients + " clients.");
+    for (var i in this.clients) {
+        this.clients[i].send(data);
+    }
+
+    console.log("Finished broadcasting " + data + " to " + numClients + " clients.");
+};
+
+
 wsServer.on('connection', function (ws) {
     numClients++;
     if (numClients % 500 === 0) {
@@ -35,8 +66,10 @@ wsServer.on('connection', function (ws) {
     ws.on('message', function (message) {
         console.log(("\treceived message: ".bold + message).blue);
 
+        logger.verbose("Broadcasting message: " + message + " at " + (new Date()).getTime());
+        wsServer.broadcast(message);
         // relay message back to see how long it takes
-        ws.send(message);
+        // ws.send(message);
         //ws.send('' + (+new Date()) );
     });
 
