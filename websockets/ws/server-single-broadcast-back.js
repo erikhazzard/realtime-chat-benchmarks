@@ -13,6 +13,8 @@ var WebSocketServer = require('ws').Server,
     wsServer = new WebSocketServer({port: 3000});
 var colors = require('colors');
 var winston = require('winston');
+var async = require('async');
+var _ = require('lodash');
 
 var logger = new (winston.Logger) ({
     transports: [
@@ -46,9 +48,9 @@ var numClients = 0,
     numCloses = 0,
     numErrors = 0;
 
-
 wsServer.broadcast = function(data) {
     console.log("Broadcasting " + data + " to " + numClients + " clients.");
+
     for (var i in this.clients) {
         this.clients[i].send(data);
     }
@@ -66,7 +68,10 @@ wsServer.on('connection', function (ws) {
     ws.on('message', function (message) {
         console.log(("\treceived message: ".bold + message).blue);
 
-        logger.verbose("Broadcasting message: " + message + " at " + (new Date()).getTime());
+        logger.verbose("Broadcasting message: " + message + " at " + (new Date()).getTime(), {
+            message: message,
+            time: new Date().getTime()
+        });
         wsServer.broadcast(message);
         // relay message back to see how long it takes
         // ws.send(message);

@@ -79,19 +79,21 @@ async.eachLimit(_.range(NUM_CONNECTIONS), 2000, function (i, cb) {
         });
 
         ws.on('message', function(data, flags) {
-            console.log("Client received data: " + data);
+            // console.log("Client received data: " + data);
 
             if (messages[data]) {
                 messages[data] = messages[data] + 1;
-                console.log(messages);
-                console.log("Total number of messages received for " + data + ": " + messages[data]);
+                // console.log("Total number of messages received for " + data + ": " + messages[data]);
 
                 if (messages[data] >= NUM_CONNECTIONS) {
-                    logger.verbose("Finished receiving " + data + " at " + (new Date()).getTime());
+                    logger.verbose("Finished receiving " + data + " at " + (new Date()).getTime(), {
+                        message: data,
+                        time: new Date().getTime()
+                    });
                 }
             } else {
                 messages[data] = 1;
-                console.log(messages);
+                // console.log(messages);
             }
         });
 
@@ -112,7 +114,10 @@ async.eachLimit(_.range(NUM_CONNECTIONS), 2000, function (i, cb) {
 
     // send a message
     sockets[0].send("test");
-    logger.verbose("test sent at " + (new Date()).getTime());
+    logger.verbose("test sent at " + (new Date()).getTime(), {
+        message: "test",
+        time: new Date().getTime()
+    });
 
     // now send a bunch of random messages back and forth
     /*
