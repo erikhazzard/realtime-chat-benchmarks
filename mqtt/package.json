@@ -1,0 +1,18 @@
+{
+  "name": "mqtt-test",
+  "version": "0.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "amqp": "^0.2.0",
+    "async": "^0.9.0",
+    "lodash": "^2.4.1",
+    "mosca": "^0.21.9",
+    "mqtt": "^0.3.10"
+  }
+}
