@@ -10,6 +10,8 @@
     "memwatch": "^0.2.2",
     "mosca": "^0.21.9",
     "mqtt": "^0.3.10",
+    "node-static": "^0.7.3",
+    "node-uuid": "^1.4.1",
     "rsync": "^0.3.0",
     "socket.io": "^1.0.6",
     "socket.io-client": "^1.0.6",

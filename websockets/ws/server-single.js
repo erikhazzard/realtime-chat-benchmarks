@@ -1,3 +1,4 @@
+require("http").globalAgent.maxSockets = Infinity;
 var WebSocketServer = require('ws').Server, 
     wsServer = new WebSocketServer({port: 3000});
 var colors = require('colors');

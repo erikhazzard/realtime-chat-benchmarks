@@ -34,7 +34,7 @@ process.on('uncaughtException', function (err) {
 
 // Spawn connections
 // --------------------------------------
-async.eachLimit(_.range(50000), 1000, function (i, cb){
+async.eachLimit(_.range(100000), 2000, function (i, cb){
     try{
         var WebSocket = require('ws');
         var ws = new WebSocket('ws://localhost:3000/', {

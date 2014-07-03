@@ -17,7 +17,7 @@ var mqtt = require('mqtt'),
     totalClients = 0;
 
 
-async.eachLimit(_.range(NUM_CLIENTS), 10, function(i, callback) {
+async.eachLimit(_.range(NUM_CLIENTS), 20, function(i, callback) {
     var client = mqtt.createClient(8883, 'localhost');
 
     client.on('error', function(e) {
