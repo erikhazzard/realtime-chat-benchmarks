@@ -17,3 +17,11 @@
         kern.maxfilesperproc=98576
 
 * Update the ulimit: `ulimit -S -n 999999`  NOTE: Also, add this to your ~/.profile
+
+
+## Note - Original Settings
+kern.stack_size: 16384
+kern.nbuf: 16384
+kern.msgbuf: 16384
+kern.maxnbuf: 16384
+kern.maxnbuf: 16384

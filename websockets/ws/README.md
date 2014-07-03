@@ -19,5 +19,6 @@ With server-single.js and cilent-connections-single.js, out of the box it suppor
         at Object.onanswer [as oncomplete] (dns.js:124:16)
 
 
-** ulimit -n 9999 **
-Will allow single server to reach ~4800 connections
+** With config **
+
+Can get up to 16k connections
