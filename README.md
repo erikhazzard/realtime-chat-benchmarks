@@ -42,6 +42,11 @@ net.ipv4.ip_local_port_range = 1024 65000
 net.ipv4.tcp_tw_reuse = 1
 ```
 
+### NodeJS Settings
+Increase memory limit in NodeJS. `–max-old-space-size=8192`
+
+
+
 ### Ephemeral Port Issue
 
 [Ephemeral Ports](http://en.wikipedia.org/wiki/Ephemeral_port) range from port 49152 to 65535 (on OSX - this is the range suggested by IANA). That gives us 16,383 available ports. Each connected socket picks a different port in this range, causing us to hit this limit. We can make the limit a little bigger by decreasing the number the Ephemeral port starts at, but it only gives us so much. 
