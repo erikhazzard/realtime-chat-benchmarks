@@ -13,7 +13,7 @@ var mqtt = require('mqtt'),
     colors = require('colors'),
     _ = require('lodash'),
     numCPUs = require('os').cpus().length,
-    NUM_CLIENTS = 25000,
+    NUM_CLIENTS = 45000,
     totalClients = 0;
 
 
