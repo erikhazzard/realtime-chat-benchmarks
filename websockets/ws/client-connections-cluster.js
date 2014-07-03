@@ -38,6 +38,14 @@ if (cluster.isMaster) {
     });
 
 } else {
+
+    process.on('uncaughtException', function (err) {
+        console.log('xxxxxxxxxxxxxxxxxx'.bold.yellow);
+        console.log('  UNCAUGHT EXCEPTION '.yellow);
+        console.log(err+'');
+        console.log('xxxxxxxxxxxxxxxxxx'.bold.yellow);
+    });
+
     console.log(('Worker started! ' + cluster.worker.id).grey);
     var numConnections = 0;
 
