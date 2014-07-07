@@ -1,5 +1,7 @@
 # Realtime Chat Server Utilities / Benchmarks
 
+Running `sudo bash config.sh` should set most of the necessary settings to reach the port limit for benchmarks.
+
 [ Add instructions ]
 
 ## Configuring System Settings - OSX
@@ -13,7 +15,7 @@
 
         net.ipv4.tcp_rmem = 4096 87380 8388608
         net.ipv4.tcp_wmem = 4096 87380 8388608
-        kern.maxfiles=90480 
+        kern.maxfiles=90480
         kern.maxfilesperproc=98576
 
 * Update the ulimit: `ulimit -S -n 999999`  NOTE: Also, add this to your ~/.profile
@@ -27,7 +29,7 @@ kern.maxnbuf: 16384
 kern.maxnbuf: 16384
 
 
-### Tuning kernal 
+### Tuning kernal
 ```
 net.ipv4.tcp_rmem = 4096 87380 16777216
 net.ipv4.tcp_wmem = 4096 65536 16777216
@@ -49,7 +51,7 @@ Increase memory limit in NodeJS. `–max-old-space-size=8192`
 
 ### Ephemeral Port Issue
 
-[Ephemeral Ports](http://en.wikipedia.org/wiki/Ephemeral_port) range from port 49152 to 65535 (on OSX - this is the range suggested by IANA). That gives us 16,383 available ports. Each connected socket picks a different port in this range, causing us to hit this limit. We can make the limit a little bigger by decreasing the number the Ephemeral port starts at, but it only gives us so much. 
+[Ephemeral Ports](http://en.wikipedia.org/wiki/Ephemeral_port) range from port 49152 to 65535 (on OSX - this is the range suggested by IANA). That gives us 16,383 available ports. Each connected socket picks a different port in this range, causing us to hit this limit. We can make the limit a little bigger by decreasing the number the Ephemeral port starts at, but it only gives us so much.
 
 Add to sysctl: `sudo sysctl -w net.inet.ip.portrange.first=32768`
 
