@@ -1,9 +1,10 @@
 /* =========================================================================
  *
- *  client-messages-single
- *  establishes a single connection and sends a message intermittently
- *  between clients after all clients have connected, logging data to
- *  a log located in ./logs/
+ *  client-single-rooms-messages
+ *
+ *  establishes NUM_CONNECTIONS connections using a single
+ *  node process (?) and splits up WebSockets into rooms with a max of
+ *  6 connections per socket
  *
  *
  * ========================================================================= */
@@ -17,14 +18,14 @@ var colors = require('colors');
 var logger = new (winston.Logger) ({
     transports: [
         new (winston.transports.File) ({
-            filename: 'logs/clients-messages-single.log',
+            filename: 'logs/clients-messages-rooms-single.log',
             level: 'verbose'
         })
     ]
 });
 
+    // Total # connections
 var NUM_CONNECTIONS = 2000,
-
     // number of messages to send
     NUM_MESSAGES = 3000,
     NUM_CONCURRENT = 50,
@@ -58,15 +59,28 @@ process.on('uncaughtException', function (err) {
 // --------------------------------------
 async.eachLimit(_.range(NUM_CONNECTIONS), 2000, function (i, cb) {
     try {
-        var ws = sockets[i] = new WebSocket('ws://localhost:3000/', {
+        // Just use floor(i / 6) as room ID for now; ensures
+        // at most 6 in a room
+        var roomId = Math.floor(i / 6),
+            roomUri = 'ws://localhost:3000/' + roomId;
+        var ws = sockets[i] = new WebSocket(roomUri, {
             protocolVersion: 8,
             origin: 'http://localhost:3000'
         });
 
-        console.log(('Connecting ('+i+')').grey);
+        ws.roomId = roomId;
+
+        console.log(('Connecting ('+i+') to room #' + roomId + '...').grey);
 
         // Setup connections, open connection
-        ws.on('open', function () {
+        ws.on('open', function setupConnection() {
+            // When the connection is first established, need to send over the
+            // room so that the server can properly create a queue/exchange
+            ws.send(JSON.stringify({
+                roomId: roomId,
+                socketId: i
+            }));
+
             numConnections++;
             console.log('Connected'.green.bold +
                 ' | Num connections : ' + (''+numConnections).blue);
@@ -79,22 +93,9 @@ async.eachLimit(_.range(NUM_CONNECTIONS), 2000, function (i, cb) {
         });
 
         ws.on('message', function(data, flags) {
-            // console.log("Client received data: " + data);
-
-            if (messages[data]) {
-                messages[data] = messages[data] + 1;
-                // console.log("Total number of messages received for " + data + ": " + messages[data]);
-
-                if (messages[data] >= NUM_CONNECTIONS) {
-                    logger.verbose("Finished receiving " + data + " at " + (new Date()).getTime(), {
-                        message: data,
-                        time: new Date().getTime()
-                    });
-                }
-            } else {
-                messages[data] = 1;
-                // console.log(messages);
-            }
+            // When a message is received, nothing happens
+            // irl the client should update its view or somethin
+            console.log("Message received from server: " + data);
         });
 
         ws.on('close', function () {
@@ -102,6 +103,7 @@ async.eachLimit(_.range(NUM_CONNECTIONS), 2000, function (i, cb) {
             console.log('  Disconnected'.red);
             console.log('xxxxxxxxxxxxxxxxxx'.bold.red);
         });
+
     } catch(err) {
         console.log('xxxxxxxxxxxxxxxxxx'.bold.yellow);
         console.log('  UNCAUGHT ERROR CONNECTING TO WEBSOCKET '.yellow);
@@ -112,21 +114,10 @@ async.eachLimit(_.range(NUM_CONNECTIONS), 2000, function (i, cb) {
     // Callback when the async call is finished
     console.log(("Done connecting " + NUM_CONNECTIONS + " connections.").yellow);
 
-    // send a message
-    sockets[0].send("test");
-    logger.verbose("test sent at " + (new Date()).getTime(), {
-        message: "test",
-        time: new Date().getTime()
-    });
-
-    // now send a bunch of random messages back and forth
-    /*
-    async.eachLimit(_.range(30), 10, function(i, cb) {
-        setInterval(function() {
-            sockets[i].send("test" + i);
-            logger.verbose("test" + i + " sent at " + (new Date()).getTime());
-            cb();
-        });
-    });
-*/
+    // Send a message with a room ID
+    sockets[0].send(JSON.stringify({
+        roomId: 0,
+        socketId: 0,
+        message: 'hello world'
+    }));
 });

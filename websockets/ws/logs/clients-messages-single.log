@@ -61,3 +61,21 @@
 {"message":"test sent at 1404762565971","time":1404762565971,"level":"verbose","timestamp":"2014-07-07T19:49:25.973Z"}
 {"message":"Sending message to AMQP","time":1404762565974,"level":"verbose","timestamp":"2014-07-07T19:49:25.976Z"}
 {"message":"Message received from AMQP, broadcasting...","level":"verbose","timestamp":"2014-07-07T19:49:25.984Z"}
+{"message":"test sent at 1404762628477","time":1404762628478,"level":"verbose","timestamp":"2014-07-07T19:50:28.479Z"}
+{"message":"Sending message to AMQP","time":1404762628480,"level":"verbose","timestamp":"2014-07-07T19:50:28.482Z"}
+{"message":"Message received from AMQP, broadcasting...","level":"verbose","timestamp":"2014-07-07T19:50:28.489Z"}
+{"message":"test sent at 1404762653432","time":1404762653432,"level":"verbose","timestamp":"2014-07-07T19:50:53.434Z"}
+{"message":"Sending message to AMQP","time":1404762653434,"level":"verbose","timestamp":"2014-07-07T19:50:53.435Z"}
+{"message":"Message received from AMQP, broadcasting...","level":"verbose","timestamp":"2014-07-07T19:50:53.442Z"}
+{"message":"Sending message to AMQP","time":1404762679298,"level":"verbose","timestamp":"2014-07-07T19:51:19.298Z"}
+{"message":"Message received from AMQP, broadcasting...","level":"verbose","timestamp":"2014-07-07T19:51:19.305Z"}
+{"message":"test sent at 1404762679296","time":1404762679296,"level":"verbose","timestamp":"2014-07-07T19:51:19.297Z"}
+{"message":"Broadcasting message: {\"room\":0,\"message\":\"hello world\"} at 1404765039388","time":1404765039388,"level":"verbose","timestamp":"2014-07-07T20:30:39.388Z"}
+{"message":"Broadcasting message: {\"room\":0,\"message\":\"hello world\"} at 1404765079821","time":1404765079821,"level":"verbose","timestamp":"2014-07-07T20:31:19.822Z"}
+{"message":"Broadcasting message: {\"room\":0,\"message\":\"hello world\"} at 1404765116533","time":1404765116533,"level":"verbose","timestamp":"2014-07-07T20:31:56.534Z"}
+{"message":"Broadcasting message: {\"room\":0,\"message\":\"hello world\"} at 1404768362339","time":1404768362339,"level":"verbose","timestamp":"2014-07-07T21:26:02.341Z"}
+{"message":"Broadcasting message: {\"room\":0,\"message\":\"hello world\"} at 1404768445350","time":1404768445351,"level":"verbose","timestamp":"2014-07-07T21:27:25.352Z"}
+{"message":"Broadcasting message: {\"room\":0,\"message\":\"hello world\"} at 1404768604859","time":1404768604860,"level":"verbose","timestamp":"2014-07-07T21:30:04.861Z"}
+{"message":"Broadcasting message: {\"room\":0,\"message\":\"hello world\"} at 1404768647996","time":1404768647997,"level":"verbose","timestamp":"2014-07-07T21:30:47.998Z"}
+{"message":"Broadcasting message: {\"room\":0,\"socketId\":0,\"message\":\"hello world\"} at 1404768838800","time":1404768838800,"level":"verbose","timestamp":"2014-07-07T21:33:58.801Z"}
+{"message":"Broadcasting message: {\"roomId\":0,\"socketId\":0,\"message\":\"hello world\"} at 1404768861255","time":1404768861255,"level":"verbose","timestamp":"2014-07-07T21:34:21.257Z"}

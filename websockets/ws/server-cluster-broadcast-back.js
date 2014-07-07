@@ -82,6 +82,8 @@ if (cluster.isMaster) {
             console.log("#messages exchange created");
         });
 
+        console.log(ex);
+
         connection.queue('messages', function(q) {
             var WebSocketServer = require('ws').Server,
                 wsServer = new WebSocketServer({port: 3000});
