@@ -1,6 +1,6 @@
 /**
  *
- *  sever-single-broadcast-back
+ *  sever-cluster-broadcast-back
  *
  *  Broadcasts all received messages to all connected clients and logs the
  *  time to see how long it takes for a message to propagate from a
@@ -44,106 +44,121 @@ if (cluster.isMaster) {
         );
     }, 1500);
 
-    for (var i = 0; i < numCPUs; i++) {
-        cluster.fork();
-    }
-
-    cluster.on('exit', function(worker, code, signal) {
-        console.log('worker ' + worker.process.pid + ' died');
-    });
-} else {
-    // Websocket server
-    // --------------------------------------
-    console.log(('Worker started! ' + cluster.worker.id).grey);
-
     var connection = amqp.createConnection({
         host: 'localhost'
     });
 
     connection.on('ready', function() {
+        var ex = connection.exchange('messages', {
+            type: 'fanout'
+        }, function() {
+            console.log("#messages exchange created on master");
 
-        connection.queue('messages', function(queue) {
+            for (var i = 0; i < numCPUs; i++) {
+                cluster.fork();
+            }
 
-            queue.subscribe(function(message) {
-                if (message.action == 'broadcast') {
-                    // broadcast to all clients
-                    for (var i in this.clients) {
-                        this.clients[i].send(data);
-                    }
-                }
-                console.log(message);
-                winston.log(message);
-                console.log("Message received: " + message);
-            });
-
-            connection.publish('messages', {
-                message: 'hi'
-            }, {
-                contentType: 'application/json',
-                contentEncoding: 'utf-8'
+            cluster.on('exit', function(worker, code, signal) {
+                console.log('worker ' + worker.process.pid + ' died');
             });
         });
     });
 
-    var WebSocketServer = require('ws').Server,
-        wsServer = new WebSocketServer({port: 3000});
+} else {
+    // Websocket server
+    // --------------------------------------
+    console.log(('Worker started! ' + cluster.worker.id).grey);
 
-    var numClients = 0,
-        numCloses = 0,
-        numErrors = 0;
+    // Connect to AMQP
+    var connection = amqp.createConnection({
+        host: 'localhost'
+    });
 
-    wsServer.broadcast = function(data) {
-        console.log("Broadcasting " + data + " to " + numClients + " clients.");
-
-        // send broadcast message to AMQP connection
-        connection.publish('messages', {
-            action: 'broadcast'
-        }, {
-            contentType: 'application/json',
-            contentEncoding: 'utf-8'
+    connection.on('ready', function() {
+        var ex = connection.exchange('messages', {
+            type: 'fanout',
+            passive: true
+        }, function() {
+            console.log("#messages exchange created");
         });
 
-        /*
-        for (var i in this.clients) {
-            this.clients[i].send(data);
-        }
-        */
+        connection.queue('messages', function(q) {
+            var WebSocketServer = require('ws').Server,
+                wsServer = new WebSocketServer({port: 3000});
 
-        console.log("Finished broadcasting " + data + " to " + numClients + " clients.");
-    };
+            console.log("Worker #" + cluster.worker.id + " now connected to " + "queue " + q.name);
 
-
-    wsServer.on('connection', function (ws) {
-        numClients++;
-        if (numClients % 500 === 0) {
-            console.log(("Client connected! : ".bold + numClients).green);
-        }
-
-        ws.on('message', function (message) {
-            console.log(("\treceived message: ".bold + message).blue);
-
-            logger.verbose("Broadcasting message: " + message + " at " + (new Date()).getTime(), {
-                message: message,
-                time: new Date().getTime()
+            q.bind(ex, "messages", function() {
+                console.log('Queue from worker #' + cluster.worker.id +
+                    " bound to #messages");
             });
-            wsServer.broadcast(message);
-            // relay message back to see how long it takes
-            // ws.send(message);
-            //ws.send('' + (+new Date()) );
-        });
 
-        ws.on('close', function () {
-            numClients--;
-            numCloses++;
-            console.log(('Client closed; total number of closes: ' + numCloses).bold.red);
-            // console.log('Disconnected : '.red, numClients);
-            ws.close();
-        });
+            q.subscribe(function(message, headers, deliveryInfo, messageObject) {
+                console.log("Message received from AMQP! " + cluster.worker.id);
 
-        ws.on('error', function(e) {
-            numErrors++;
-            console.log(("Total number of errors: " + numErrors).bold.red);
-            console.log(('Client #%d error: %s', thisId, e.message).bold.red);
+                if (message.action == 'broadcast') {
+                    // broadcast to all clients
+                    logger.verbose("Message received from AMQP, broadcasting...", {
+                        message: message
+                    });
+                    wsServer.broadcast(message.message);
+                }
+            });
+
+            var numClients = 0,
+                numCloses = 0,
+                numErrors = 0;
+
+            wsServer.broadcast = function(data) {
+                console.log("Broadcasting " + data + " to " + numClients + " clients.");
+
+                for (var i in this.clients) {
+                    this.clients[i].send(data);
+                }
+
+                console.log("Finished broadcasting " + data + " to " + numClients + " clients.");
+            };
+
+
+            wsServer.on('connection', function (ws) {
+                numClients++;
+                if (numClients % 500 === 0) {
+                    console.log(("500 clients connected! Total: ".bold + numClients).green);
+                }
+
+                ws.on('message', function (message) {
+                    console.log(("Received message: ".bold + message).yellow);
+
+                    logger.verbose("Sending message to AMQP", {
+                        message: message,
+                        time: new Date().getTime()
+                    });
+
+                    // When a message is received, send a message to AMQP to alert
+                    // other workers that a message has been sent
+                    ex.publish("messages", {
+                        action: 'broadcast',
+                        message: message
+                    }, {
+                        contentType: 'application/json',
+                        contentEncoding: 'utf-8'
+                    });
+                });
+
+                ws.on('close', function () {
+                    numClients--;
+                    numCloses++;
+                    console.log(('Client closed; total number of closes: ' + numCloses).bold.red);
+                    // console.log('Disconnected : '.red, numClients);
+                    ws.close();
+                });
+
+                ws.on('error', function(e) {
+                    numErrors++;
+                    console.log(("Total number of errors: " + numErrors).bold.red);
+                    console.log(('Client #%d error: %s', thisId, e.message).bold.red);
+                });
+            });
         });
     });
 }

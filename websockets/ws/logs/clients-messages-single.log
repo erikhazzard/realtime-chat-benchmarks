@@ -15,3 +15,49 @@
 {"message":"Broadcasting message: test at 1404426607511","time":1404426607511,"level":"verbose","timestamp":"2014-07-03T22:30:07.512Z"}
 {"message":"test sent at 1404426706595","time":1404426706595,"level":"verbose","timestamp":"2014-07-03T22:31:46.596Z"}
 {"message":"Broadcasting message: test at 1404426706596","time":1404426706596,"level":"verbose","timestamp":"2014-07-03T22:31:46.597Z"}
+{"message":"test sent at 1404754559517","time":1404754559517,"level":"verbose","timestamp":"2014-07-07T17:35:59.518Z"}
+{"message":"Broadcasting message: test at 1404754559533","time":1404754559533,"level":"verbose","timestamp":"2014-07-07T17:35:59.535Z"}
+{"message":"Finished receiving test at 1404754562281","time":1404754562281,"level":"verbose","timestamp":"2014-07-07T17:36:02.281Z"}
+{"message":"test sent at 1404755154686","time":1404755154686,"level":"verbose","timestamp":"2014-07-07T17:45:54.688Z"}
+{"message":"test sent at 1404755676174","time":1404755676174,"level":"verbose","timestamp":"2014-07-07T17:54:36.175Z"}
+{"message":"test sent at 1404755776361","time":1404755776361,"level":"verbose","timestamp":"2014-07-07T17:56:16.362Z"}
+{"message":"test sent at 1404755924083","time":1404755924083,"level":"verbose","timestamp":"2014-07-07T17:58:44.085Z"}
+{"message":"Sending message to AMQP","time":1404756219165,"level":"verbose","timestamp":"2014-07-07T18:03:39.167Z"}
+{"message":"test sent at 1404756219164","time":1404756219164,"level":"verbose","timestamp":"2014-07-07T18:03:39.166Z"}
+{"message":"Message received from AMQP, broadcasting...","level":"verbose","timestamp":"2014-07-07T18:03:39.180Z"}
+{"message":"Sending message to AMQP","time":1404756293936,"level":"verbose","timestamp":"2014-07-07T18:04:53.937Z"}
+{"message":"test sent at 1404756293936","time":1404756293936,"level":"verbose","timestamp":"2014-07-07T18:04:53.937Z"}
+{"message":"Message received from AMQP, broadcasting...","level":"verbose","timestamp":"2014-07-07T18:04:53.949Z"}
+{"message":"Sending message to AMQP","time":1404757016495,"level":"verbose","timestamp":"2014-07-07T18:16:56.497Z"}
+{"message":"test sent at 1404757016493","time":1404757016493,"level":"verbose","timestamp":"2014-07-07T18:16:56.495Z"}
+{"message":"Message received from AMQP, broadcasting...","level":"verbose","timestamp":"2014-07-07T18:16:56.512Z"}
+{"message":"Sending message to AMQP","time":1404757339849,"level":"verbose","timestamp":"2014-07-07T18:22:19.850Z"}
+{"message":"test sent at 1404757339849","time":1404757339849,"level":"verbose","timestamp":"2014-07-07T18:22:19.850Z"}
+{"message":"Message received from AMQP, broadcasting...","level":"verbose","timestamp":"2014-07-07T18:22:19.866Z"}
+{"message":"test sent at 1404757663220","time":1404757663220,"level":"verbose","timestamp":"2014-07-07T18:27:43.223Z"}
+{"message":"Sending message to AMQP","time":1404757663222,"level":"verbose","timestamp":"2014-07-07T18:27:43.223Z"}
+{"message":"Finished receiving test at 1404757663800","time":1404757663800,"level":"verbose","timestamp":"2014-07-07T18:27:43.800Z"}
+{"message":"Sending message to AMQP","time":1404757739355,"level":"verbose","timestamp":"2014-07-07T18:28:59.356Z"}
+{"message":"test sent at 1404757739355","time":1404757739355,"level":"verbose","timestamp":"2014-07-07T18:28:59.356Z"}
+{"message":"Message received from AMQP, broadcasting...","level":"verbose","timestamp":"2014-07-07T18:28:59.371Z"}
+{"message":"Sending message to AMQP","time":1404758023884,"level":"verbose","timestamp":"2014-07-07T18:33:43.885Z"}
+{"message":"test sent at 1404758023884","time":1404758023884,"level":"verbose","timestamp":"2014-07-07T18:33:43.885Z"}
+{"message":"Message received from AMQP, broadcasting...","level":"verbose","timestamp":"2014-07-07T18:33:43.902Z"}
+{"message":"test sent at 1404758052511","time":1404758052511,"level":"verbose","timestamp":"2014-07-07T18:34:12.512Z"}
+{"message":"Sending message to AMQP","time":1404758052513,"level":"verbose","timestamp":"2014-07-07T18:34:12.515Z"}
+{"message":"Message received from AMQP, broadcasting...","level":"verbose","timestamp":"2014-07-07T18:34:12.525Z"}
+{"message":"test sent at 1404759701085","time":1404759701085,"level":"verbose","timestamp":"2014-07-07T19:01:41.087Z"}
+{"message":"Sending message to AMQP","time":1404759701088,"level":"verbose","timestamp":"2014-07-07T19:01:41.090Z"}
+{"message":"test sent at 1404760086536","time":1404760086536,"level":"verbose","timestamp":"2014-07-07T19:08:06.538Z"}
+{"message":"Sending message to AMQP","time":1404760086541,"level":"verbose","timestamp":"2014-07-07T19:08:06.543Z"}
+{"message":"test sent at 1404760112543","time":1404760112543,"level":"verbose","timestamp":"2014-07-07T19:08:32.545Z"}
+{"message":"Sending message to AMQP","time":1404760112546,"level":"verbose","timestamp":"2014-07-07T19:08:32.547Z"}
+{"message":"test sent at 1404760690738","time":1404760690738,"level":"verbose","timestamp":"2014-07-07T19:18:10.740Z"}
+{"message":"Sending message to AMQP","time":1404760690741,"level":"verbose","timestamp":"2014-07-07T19:18:10.742Z"}
+{"message":"Message received from AMQP, broadcasting...","level":"verbose","timestamp":"2014-07-07T19:18:10.748Z"}
+{"message":"test sent at 1404761231970","time":1404761231970,"level":"verbose","timestamp":"2014-07-07T19:27:11.973Z"}
+{"message":"Sending message to AMQP","time":1404761231973,"level":"verbose","timestamp":"2014-07-07T19:27:11.975Z"}
+{"message":"Message received from AMQP, broadcasting...","level":"verbose","timestamp":"2014-07-07T19:27:11.982Z"}
+{"message":"test sent at 1404762565971","time":1404762565971,"level":"verbose","timestamp":"2014-07-07T19:49:25.973Z"}
+{"message":"Sending message to AMQP","time":1404762565974,"level":"verbose","timestamp":"2014-07-07T19:49:25.976Z"}
+{"message":"Message received from AMQP, broadcasting...","level":"verbose","timestamp":"2014-07-07T19:49:25.984Z"}

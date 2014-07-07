@@ -21,7 +21,7 @@ var logger = new (winston.Logger) ({
     ]
 });
 
-var NUM_CONNECTIONS = 20000,
+var NUM_CONNECTIONS = 2000,
 
     // number of messages to send
     NUM_MESSAGES = 3000,
