@@ -63,7 +63,7 @@ connection.on('ready', function() {
     // When an AMQP connection has been established, start the
     // WebSocket server
 
-    var wsServer = new WebSocketServer({port: 3000});
+    var wsServer = new WebSocketServer({ port: 3000 });
 
     // Websocket server stuff
     // --------------------------------------
@@ -102,6 +102,7 @@ connection.on('ready', function() {
                 }, function() {
                     console.log("Got exchange #" + roomId);
 
+                    // Somehow optimize to not send back to orig publisher?
                     exchange.publish('key', {
                         roomId: roomId,
                         content: content
@@ -109,31 +110,26 @@ connection.on('ready', function() {
                         contentType: 'application/json'
                     });
                 });
-
                 // Send a message to the room's exchange so that the appropriate queues
                 // are notified
             } else {
-                // Initial response from client, just the room information
+                // Initial response from client, just the room and socket information
                 // Here we create an exchange for the room and queue for the socket
-
-                // Set roomId on socket w/e
-                ws.roomId = roomId;
                 // and AMQP Exchange
-                ws.exchange = connection.exchange('room' + roomId, {
+                var ex = connection.exchange('room' + roomId, {
                     type: 'fanout'
                 }, function() {
-                    console.log("room" + roomId + " exchange set to socket");
+                    console.log("room" + roomId + " exchange set to socket " + socketId);
                 });
 
-                connection.queue('queue-' + socketId, function(q) {
-                    q.bind(ws.exchange, 'key'); // key not needed bc fanout
+                var queue = connection.queue('queue-' + socketId, function(q) {
+                    // Bind queue to exchange
+                    q.bind(ex, 'key'); // key not needed bc fanout
 
                     q.subscribe(function(msg) {
                         // When a message is received in the queue, send that back
                         // to the appropriate web socket
-                        console.log(msg);
                         console.log("Message received on queue " + q.name + ": " + msg);
-
                         ws.send(msg.content);
                     });
                 });

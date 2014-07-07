@@ -68,8 +68,6 @@ async.eachLimit(_.range(NUM_CONNECTIONS), 2000, function (i, cb) {
             origin: 'http://localhost:3000'
         });
 
-        ws.roomId = roomId;
-
         console.log(('Connecting ('+i+') to room #' + roomId + '...').grey);
 
         // Setup connections, open connection
@@ -116,7 +114,7 @@ async.eachLimit(_.range(NUM_CONNECTIONS), 2000, function (i, cb) {
 
     // Send a message with a room ID
     sockets[0].send(JSON.stringify({
-        roomId: 0,
+        roomId: 10,
         socketId: 0,
         message: 'hello world'
     }));
