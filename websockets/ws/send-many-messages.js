@@ -9,6 +9,7 @@
 var colors = require('colors');
 var cluster = require('cluster');
 var numCPUs = require('os').cpus().length;
+var WebSocket = require('ws');
 
 // Stats overview
 // --------------------------------------
@@ -36,12 +37,10 @@ if (cluster.isMaster) {
 } else {
     console.log(('Worker started! ' + cluster.worker.id).grey);
 
-    var WebSocket = require('ws');
     var ws = new WebSocket('ws://localhost:3000/', {
-        protocolVersion: 8, 
+        protocolVersion: 8,
         origin: 'http://localhost:3000'
     });
-    var colors = require('colors');
 
     console.log('Connecting...'.grey);
 

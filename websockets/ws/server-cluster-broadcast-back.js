@@ -6,6 +6,8 @@
  *  time to see how long it takes for a message to propagate from a
  *  client to all clients
  *
+ *  DOES NOT WORk :(
+ *
  */
 
 require("http").globalAgent.maxSockets = Infinity;
@@ -82,8 +84,6 @@ if (cluster.isMaster) {
             console.log("#messages exchange created");
         });
 
-        console.log(ex);
-
         connection.queue('messages', function(q) {
             var WebSocketServer = require('ws').Server,
                 wsServer = new WebSocketServer({port: 3000});
@@ -120,7 +120,6 @@ if (cluster.isMaster) {
 
                 console.log("Finished broadcasting " + data + " to " + numClients + " clients.");
             };
-
 
             wsServer.on('connection', function (ws) {
                 numClients++;

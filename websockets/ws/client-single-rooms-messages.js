@@ -112,10 +112,22 @@ async.eachLimit(_.range(NUM_CONNECTIONS), 2000, function (i, cb) {
     // Callback when the async call is finished
     console.log(("Done connecting " + NUM_CONNECTIONS + " connections.").yellow);
 
-    // Send a message with a room ID
-    sockets[0].send(JSON.stringify({
-        roomId: 10,
-        socketId: 0,
-        message: 'hello world'
-    }));
+    var roomNum = 0,
+        socketNum = 10;
+
+    for (var i = 0; i < 10; i++) {
+        setTimeout(function() {
+            setInterval(function() {
+                // Send a message with a room ID
+                sockets[socketNum].send(JSON.stringify({
+                    roomId: roomNum,
+                    socketId: 0,
+                    message: 'hello world; room #' + roomNum
+                }));
+
+                socketNum = (socketNum + 1) % sockets.length;
+                roomNum = (roomNum + 1) % Math.floor((sockets.length / 6));
+            }, 80);
+        }, 200 * i);
+    }
 });

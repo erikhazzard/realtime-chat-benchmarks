@@ -3,7 +3,7 @@
  *  sever-single-broadcast-back
  *
  *  Broadcasts all received messages to all connected clients and logs the
- *  time to see how long it takes for a message to propagate from a
+ *  time to see how long it takes for a message to propagate from one
  *  client to all clients
  *
  */

@@ -1,10 +1,15 @@
 /**
  *
- *  server-single-amqp-broadcast-back
+ *  server-single-amqp-room-queue-broadcast-back
  *
  *  Non-clustered node server responsible for broadcasting any
  *  received messages back to the client by first communicating
  *  through AMQP
+ *
+ *  This benchmark creates a queue for each room as opposed to each
+ *  client and stores information about which sockets are connected
+ *  to which queue; after a messages is received from the queue, it
+ *  gets broadcasted to all of the sockets associated to the queue.
  *
  */
 
@@ -71,6 +76,9 @@ connection.on('ready', function() {
         numCloses = 0,
         numErrors = 0;
 
+    // Array of queues, one for each room
+    var queues = [];
+
     wsServer.on('connection', function (ws) {
         // When a client connects, increase num
         numClients++;
@@ -103,15 +111,16 @@ connection.on('ready', function() {
                     console.log("Got exchange #" + roomId);
 
                     // Somehow optimize to not send back to orig publisher?
+                    // Send a message to the room's exchange so that the appropriate queues
+                    // are notified
                     exchange.publish('key', {
                         roomId: roomId,
+                        socketId: socketId,
                         content: content
                     }, {
                         contentType: 'application/json'
                     });
                 });
-                // Send a message to the room's exchange so that the appropriate queues
-                // are notified
             } else {
                 // Initial response from client, just the room and socket information
                 // Here we create an exchange for the room and queue for the socket
@@ -122,22 +131,42 @@ connection.on('ready', function() {
                     console.log("room" + roomId + " exchange set to socket " + socketId);
                 });
 
-                var queue = connection.queue('queue-' + socketId, function(q) {
-                    // Bind queue to exchange
-                    q.bind(ex, 'key'); // key not needed bc fanout
+                if (queues[roomId]) {
+                    // Room has been created; just add to the sockets array
+                    queues[roomId].sockets.push(ws);
+                } else {
+                    // If the queue hasn't already been created, create it
+                    var q = connection.queue('queue-' + roomId, function(q) {
+                        // Bind queue to exchange
+                        q.bind(ex, 'key'); // key not needed bc fanout
 
-                    q.subscribe(function(msg) {
-                        // When a message is received in the queue, send that back
-                        // to the appropriate web socket
-                        console.log("Message received on queue " + q.name + ": " + msg);
-                        ws.send(msg.content);
+                        q.subscribe(function(data) {
+                            // When a message is received in the queue, send that back
+                            // to all of the queue's web sockets
+                            console.log("Message received on queue " + q.name + ": " + data);
+                            var roomId = data.roomId,
+                                sockets = queues[roomId].sockets;
+
+                            for (var i = 0; i < sockets.length; i++) {
+                                sockets[i].send(data.content);
+                            }
+                        });
                     });
-                });
+
+                    // Use object to store all of the sockets
+                    var queue = {
+                        queue: q,
+                        sockets: [ws]
+                    };
+
+                    queues[roomId] = queue;
+                }
             }
         });
 
+        ws.on('close', function() {
+            // TODO: logic to remove the socket from the queues array
 
-        ws.on('close', function () {
             numClients--;
             numCloses++;
             console.log(('Client closed; total number of closes: ' + numCloses).bold.red);
@@ -150,22 +179,4 @@ connection.on('ready', function() {
             console.log(('Client #%d error: %s', thisId, e.message).bold.red);
         });
     });
-
-/*
-    var ex = connection.exchange('messages-exchange', {
-        type: 'fanout'
-    }, function() {
-        console.log("#messages exchange created");
-
-        var queue = connection.queue('messages-queue', function(q) {
-            // Connect to queue, bind to message-exchange
-            q.bind(ex, 'messages-key');
-
-            q.subscribe(function(msg) {
-                // When a message is received, broadcast to all clients
-                console.log("Message received: " + msg);
-            });
-        });
-    });
-*/
 });
