@@ -6,6 +6,8 @@
  *  time to see how long it takes for a message to propagate from a
  *  client to all clients
  *
+ *  DOES NOT WORk :(
+ *
  */
 
 require("http").globalAgent.maxSockets = Infinity;
@@ -118,7 +120,6 @@ if (cluster.isMaster) {
 
                 console.log("Finished broadcasting " + data + " to " + numClients + " clients.");
             };
-
 
             wsServer.on('connection', function (ws) {
                 numClients++;

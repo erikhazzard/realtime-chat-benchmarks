@@ -11,6 +11,8 @@ var colors = require('colors');
 var async = require('async');
 var _ = require('lodash');
 var winston = require('winston');
+var WebSocket = require('ws');
+var colors = require('colors');
 
 var logger = new (winston.Logger) ({
     transports: [
@@ -35,13 +37,13 @@ function format (val){
     return Math.round(((val / 1024 / 1024) * 1000) / 1000) + 'mb';
 }
 
-    var statsId = setInterval(function () {
-        console.log('Memory Usage :: '.bold.green.inverse +
-            ("\tRSS: " + format(process.memoryUsage().rss)).blue +
-            ("\tHeap Total: " + format(process.memoryUsage().heapTotal)).yellow +
-            ("\t\tHeap Used: " + format(process.memoryUsage().heapUsed)).magenta
-        );
-    }, 1500);
+var statsId = setInterval(function () {
+    console.log('Memory Usage :: '.bold.green.inverse +
+        ("\tRSS: " + format(process.memoryUsage().rss)).blue +
+        ("\tHeap Total: " + format(process.memoryUsage().heapTotal)).yellow +
+        ("\t\tHeap Used: " + format(process.memoryUsage().heapUsed)).magenta
+    );
+}, 1500);
 
 var numConnections = 0;
 
@@ -56,12 +58,10 @@ process.on('uncaughtException', function (err) {
 // --------------------------------------
 async.eachLimit(_.range(NUM_CONNECTIONS), 2000, function (i, cb) {
     try {
-        var WebSocket = require('ws');
         var ws = sockets[i] = new WebSocket('ws://localhost:3000/', {
             protocolVersion: 8,
             origin: 'http://localhost:3000'
         });
-        var colors = require('colors');
 
         console.log(('Connecting ('+i+')').grey);
 

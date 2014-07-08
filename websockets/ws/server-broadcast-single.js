@@ -11,6 +11,8 @@ var WebSocketServer = require('ws').Server,
     wsServer = new WebSocketServer({port: 3000});
 var colors = require('colors');
 
+var BROADCAST_INTERVAL = 500;
+
 console.log("\t\t\tWS Server starting".bold.blue);
 console.log("================================================================");
 
@@ -58,6 +60,13 @@ wsServer.on('connection', function (ws) {
         console.log(("Total number of errors: " + numErrors).bold.red);
         console.log(('Client #%d error: %s', thisId, e.message).bold.red);
     });
+
+    setInterval(function() {
+        // Routinely broadcast a message to all clients
+        console.log("Broadcasting...");
+        wsServer.broadcast("hello");
+
+    }, BROADCAST_INTERVAL);
 });
 
 wsServer.broadcast = function(data) {
@@ -68,11 +77,3 @@ wsServer.broadcast = function(data) {
 
     console.log("Finished broadcasting " + data + " to " + numClients + " clients.");
 };
-
-setInterval(function() {
-    // Routinely broadcast a message to all clients
-
-    console.log("Broadcasting...");
-    wsServer.broadcast("hello");
-
-}, 2000);
