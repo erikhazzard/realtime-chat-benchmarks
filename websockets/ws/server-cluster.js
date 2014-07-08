@@ -1,3 +1,11 @@
+/**
+ *
+ *  server-cluster
+ *
+ *  Spawns a cluster of WebSocket servers
+ *
+ */
+
 var colors = require('colors');
 var cluster = require('cluster');
 var numCPUs = require('os').cpus().length;
@@ -32,7 +40,7 @@ if (cluster.isMaster) {
     // Websocket server
     // --------------------------------------
     console.log(('Worker started! ' + cluster.worker.id).grey);
-    var WebSocketServer = require('ws').Server, 
+    var WebSocketServer = require('ws').Server,
         wsServer = new WebSocketServer({port: 3000});
 
     var numClients = 0;
@@ -40,7 +48,7 @@ if (cluster.isMaster) {
     wsServer.on('connection', function (ws) {
         numClients++;
 
-        console.log(("Client connected! : ".bold + numClients).green + 
+        console.log(("Client connected! : ".bold + numClients).green +
             '| worker: ' + cluster.worker.id);
 
         ws.on('message', function (message) {

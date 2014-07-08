@@ -33,11 +33,11 @@ wsServer.on('connection', function (ws) {
     }
 
     ws.on('message', function (message) {
-        console.log(("\treceived message: ".bold + message).blue);
+        var data = JSON.parse(message);
+        console.log(("\treceived message: ".bold + data.message).blue);
 
         // relay message back to see how long it takes
         ws.send(message);
-        //ws.send('' + (+new Date()) );
     });
 
     ws.on('close', function () {
