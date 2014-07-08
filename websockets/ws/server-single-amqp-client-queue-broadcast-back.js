@@ -128,11 +128,11 @@ connection.on('ready', function() {
                     // Bind queue to exchange
                     q.bind(ex, 'key'); // key not needed bc fanout
 
-                    q.subscribe(function(msg) {
+                    q.subscribe(function(data) {
                         // When a message is received in the queue, send that back
                         // to the appropriate web socket
-                        console.log("Message received on queue " + q.name + ": " + msg);
-                        ws.send(msg.content);
+                        console.log("Message received on queue " + q.name + ": " + data);
+                        ws.send(JSON.stringify(data));
                     });
                 });
             }

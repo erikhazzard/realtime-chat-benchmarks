@@ -18,14 +18,14 @@ var colors = require('colors');
 var logger = new (winston.Logger) ({
     transports: [
         new (winston.transports.File) ({
-            filename: 'logs/clients-messages-rooms-single.log',
+            filename: 'logs/client-room-queue-amqp-broadcast-back.log',
             level: 'verbose'
         })
     ]
 });
 
     // Total # connections
-var NUM_CONNECTIONS = 2000,
+var NUM_CONNECTIONS = 20000,
     // number of messages to send
     NUM_MESSAGES = 3000,
     NUM_CONCURRENT = 50,
@@ -93,6 +93,11 @@ async.eachLimit(_.range(NUM_CONNECTIONS), 2000, function (i, cb) {
         ws.on('message', function(data, flags) {
             // When a message is received, nothing happens
             // irl the client should update its view or somethin
+            var parsed = JSON.parse(data);
+            logger.verbose("Message received from server from room " + parsed.roomId, {
+                room: parsed.roomId,
+                time: new Date().getTime()
+            });
             console.log("Message received from server: " + data);
         });
 
@@ -119,15 +124,21 @@ async.eachLimit(_.range(NUM_CONNECTIONS), 2000, function (i, cb) {
         setTimeout(function() {
             setInterval(function() {
                 // Send a message with a room ID
+                var time = new Date().getTime();
                 sockets[socketNum].send(JSON.stringify({
                     roomId: roomNum,
-                    socketId: 0,
-                    message: 'hello world; room #' + roomNum
+                    time: time,
+                    message: 'hello world'
                 }));
+
+                logger.verbose("Message sent from room " + roomNum, {
+                    room: roomNum,
+                    time: time
+                });
 
                 socketNum = (socketNum + 1) % sockets.length;
                 roomNum = (roomNum + 1) % Math.floor((sockets.length / 6));
-            }, 80);
-        }, 200 * i);
+            }, 300);
+        }, 177 * i);
     }
 });

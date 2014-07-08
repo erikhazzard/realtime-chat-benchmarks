@@ -92,7 +92,6 @@ connection.on('ready', function() {
 
             var data = JSON.parse(message),
                 roomId = data.roomId,
-                socketId = data.socketId,
                 content = data.message;
             if (content) {
                 // This is a proper message that needs to be broadcast back to all
@@ -115,7 +114,6 @@ connection.on('ready', function() {
                     // are notified
                     exchange.publish('key', {
                         roomId: roomId,
-                        socketId: socketId,
                         content: content
                     }, {
                         contentType: 'application/json'
@@ -128,7 +126,7 @@ connection.on('ready', function() {
                 var ex = connection.exchange('room' + roomId, {
                     type: 'fanout'
                 }, function() {
-                    console.log("room" + roomId + " exchange set to socket " + socketId);
+                    console.log("room" + roomId + " exchange set");
                 });
 
                 if (queues[roomId]) {
@@ -148,7 +146,7 @@ connection.on('ready', function() {
                                 sockets = queues[roomId].sockets;
 
                             for (var i = 0; i < sockets.length; i++) {
-                                sockets[i].send(data.content);
+                                sockets[i].send(JSON.stringify(data));
                             }
                         });
                     });
@@ -166,7 +164,6 @@ connection.on('ready', function() {
 
         ws.on('close', function() {
             // TODO: logic to remove the socket from the queues array
-
             numClients--;
             numCloses++;
             console.log(('Client closed; total number of closes: ' + numCloses).bold.red);
