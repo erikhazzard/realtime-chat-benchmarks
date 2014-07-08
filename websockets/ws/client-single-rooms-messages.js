@@ -4,7 +4,7 @@
  *
  *  establishes NUM_CONNECTIONS connections using a single
  *  node process (?) and splits up WebSockets into rooms with a max of
- *  6 connections per socket
+ *  6 connections per room
  *
  *
  * ========================================================================= */

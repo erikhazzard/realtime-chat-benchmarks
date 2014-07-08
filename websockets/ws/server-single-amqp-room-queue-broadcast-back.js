@@ -67,6 +67,7 @@ var connection = amqp.createConnection({
 connection.on('ready', function() {
     // When an AMQP connection has been established, start the
     // WebSocket server
+    console.log("AMQP connection established");
 
     var wsServer = new WebSocketServer({ port: 3000 });
 
@@ -94,15 +95,16 @@ connection.on('ready', function() {
                 roomId = data.roomId,
                 content = data.message;
             if (content) {
-                // This is a proper message that needs to be broadcast back to all
-                // clients in the same room
-                logger.verbose("Broadcasting message: " + message + " at " + (new Date()).getTime(), {
+                // This is a proper message that needs to be broadcast back to
+                // all clients in the same room
+                logger.verbose("Broadcasting message: " + message +
+                    " at " + (new Date()).getTime(), {
                     message: message,
                     time: new Date().getTime()
                 });
 
-                // Exchange has already been set on socket so just publish something to
-                // the exchange
+                // Exchange has already been set on socket so just publish
+                // something to the exchange
                 // Need to find the right exchange to publish to
                 var exchange = connection.exchange('room' + roomId, {
                     type: 'fanout'
@@ -110,8 +112,8 @@ connection.on('ready', function() {
                     console.log("Got exchange #" + roomId);
 
                     // Somehow optimize to not send back to orig publisher?
-                    // Send a message to the room's exchange so that the appropriate queues
-                    // are notified
+                    // Send a message to the room's exchange so that the
+                    // appropriate queues are notified
                     exchange.publish('key', {
                         roomId: roomId,
                         content: content
@@ -120,9 +122,9 @@ connection.on('ready', function() {
                     });
                 });
             } else {
-                // Initial response from client, just the room and socket information
-                // Here we create an exchange for the room and queue for the socket
-                // and AMQP Exchange
+                // Initial response from client, just the room and socket
+                // information. Here we create an exchange for the room and
+                // queue for the socket and AMQP Exchange
                 var ex = connection.exchange('room' + roomId, {
                     type: 'fanout'
                 }, function() {
@@ -139,9 +141,10 @@ connection.on('ready', function() {
                         q.bind(ex, 'key'); // key not needed bc fanout
 
                         q.subscribe(function(data) {
-                            // When a message is received in the queue, send that back
-                            // to all of the queue's web sockets
-                            console.log("Message received on queue " + q.name + ": " + data);
+                            // When a message is received in the queue, send
+                            // that back to all of the queue's web sockets
+                            console.log("Message received on queue " + q.name +
+                                ": " + data);
                             var roomId = data.roomId,
                                 sockets = queues[roomId].sockets;
 
