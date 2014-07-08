@@ -19,11 +19,13 @@ connection.on('ready', function(err) {
     //catch redis errors so server doesn't blow up
     console.log('AMQP Server connection established!'.green);
 
-    setInterval(function(){
+    function pub (){
         connection.publish(
             'pubsub',
             { message: "Hello", token: "test" }, 
             { contentType: 'application/json', contentEncoding: 'utf-8' }
         );
-    });
+        setImmediate(pub);
+    }
+    pub();
 });
