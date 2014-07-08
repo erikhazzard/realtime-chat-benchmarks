@@ -1,21 +1,25 @@
 /* =========================================================================
  *
- * consumer.js 
- *  consumes messages sent by producer
+ * producer.js 
+ *  sends messages. a consumer consumers them
  *
  * ========================================================================= */
 var zmq = require('zmq');
-var sock = zmq.socket('pull');
+var socket = zmq.socket('sub');
 var colors = require('colors');
+var port = 'tcp://127.0.0.1:12345';
 
-sock.connect('tcp://127.0.0.1:3000');
-console.log('Worker connected to port 3000'.green);
+socket.identity = 'subscriber' + process.pid;
+socket.connect(port);
+socket.subscribe('roomid');
+
+console.log('connected!');
 
 var messagesReceived = 0;
 
-sock.on('message', function (msg){
-    // Get messages, don't log anything
+socket.on('message', function(data) {
     messagesReceived++;
+    setTimeout(function(){}, 1000);
 });
 
 setInterval(function (){

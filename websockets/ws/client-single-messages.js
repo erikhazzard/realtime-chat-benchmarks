@@ -12,7 +12,6 @@ var async = require('async');
 var _ = require('lodash');
 var winston = require('winston');
 var WebSocket = require('ws');
-var colors = require('colors');
 
 var logger = new (winston.Logger) ({
     transports: [
