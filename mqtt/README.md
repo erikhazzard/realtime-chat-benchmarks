@@ -2,8 +2,6 @@
 
 Notes...
 
-
-
 ### Test Setup A: Server + x Rooms a 5 people + 
 
 * Test random join & leave and message receiving
@@ -30,4 +28,22 @@ Notes...
   Mosca
   Mosquitto
   ZeroMq
+
+## Things to test
+-> Rountrip time for all message of a room (6 people)
+
+
+-> Feed simulation: 10k,20k connected clients total time to propagate one message to everyone
+  -> total time
+  -> avg time
+
+
+-> ZeroMq backend
+
+Test: Check the with Rabittmq + Mqtt setup throughput
+->ZeroMq: Throughput 60k-70k
+
+
+
+
 

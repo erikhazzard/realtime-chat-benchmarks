@@ -38,7 +38,7 @@ var broadcastClients = [];
 
 var index = 0;
 
-
+//Reset Logging File
 fs.writeFile('../logs/client-profiling.log', "", function (err) {
   if (err) return console.log(err);
   
@@ -132,7 +132,6 @@ async.each(_.range(NUM_CLIENTS), function(i, callback) {
             //     time: time,
             //     clientId: client.clientId
             // });
-
 
             var message = "Msg \t"+client.roomId+"\t"+time+"\t"+client.clientId+"\n"
 
