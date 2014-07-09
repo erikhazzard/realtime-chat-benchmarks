@@ -1,6 +1,6 @@
 /* =========================================================================
  *
- * pub.js 
+ * sub.js 
  *  publishes messages
  *
  * ========================================================================= */
@@ -22,23 +22,26 @@ if (cluster.isMaster) {
         console.log('Error: ' + (err+'').red);
     });
 
+    var messagesReceived = 0;
+
     connection.on('ready', function(err) {
         //catch redis errors so server doesn't blow up
         console.log('AMQP Server connection established!'.green);
 
-        setTimeout(function (){
-            console.log('Publishing messages (' + cluster.worker.id + ')...');
-            
-            function pub(){
-                connection.publish(
-                    'pubsub',
-                    { message: "Hello", token: "test" }, 
-                    { contentType: 'application/json', contentEncoding: 'utf-8' }
-                );
-                setImmediate(pub);
-            }
-            pub();
+        var queue = connection.queue(
+            'pubsub',
+            function (queue) {
+                console.log('Queue ' + queue.name + ' is open');
+        });
 
+        queue.subscribe(function queueCallback (message, headers, deliveryInfo, messageObject){
+            // when message is received, increment counter
+            messagesReceived++;
+        });
+
+        setInterval(function (){
+            console.log("Messages per second: " + (messagesReceived+'').green.bold);
+            messagesReceived = 0;
         }, 1000);
     });
 }
