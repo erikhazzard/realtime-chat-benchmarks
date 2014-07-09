@@ -1,6 +1,4 @@
  #!/bin/bash          
-echo "Starting script"
-
 lastDate=$(tail -n1 ./logs/logs.log|cut -f3 -d$'\t')
 firstDate=$(head -n1 ./logs/logs.log|cut -f3 -d$'\t')
  
