@@ -32,14 +32,15 @@ var statsId = setInterval(function () {
 var mosca = require('mosca');
 
 var ascoltatore = {
-    type: 'amqp',
+    type: 'mqtt',
     json: false,
-    amqp: require('amqp'),
-    exchange: 'ascolatore5672'
+    mqtt: require('mqtt'),
+    host: 'localhost'
+    
 };
 
 var settings = {
-    port: 8883,
+    port: 8884,
     backend: ascoltatore
 };
 
@@ -60,7 +61,7 @@ var start, end, maxNrItems;
 
 // fired when a message is received
 server.on('published', function(packet, client) {
-
+    console.log("Reveived message", packet.payload);
 });
 
 server.on('clientDisconnected', function(client) {

@@ -44,7 +44,6 @@ async.eachLimit(_.range(NUM_CONNECTIONS), 2000, function (i, cb) {
             protocolVersion: 8,
             origin: 'http://localhost:3000'
         });
-        var colors = require('colors');
 
         console.log(('Connecting ('+i+')').grey);
 
