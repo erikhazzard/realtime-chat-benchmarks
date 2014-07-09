@@ -15,19 +15,27 @@ var mqtt = require('mqtt'),
     _ = require('lodash'),
     numCPUs = require('os').cpus().length,
     fs = require('fs'),
-    NUM_CLIENTS = 1000,
+    NUM_CLIENTS = process.argv[2] || 0,
     totalClients = 0;
+
+
+var sys = require('sys');
+var exec = require('child_process').exec;
+
 
 var msgNr = 0;
 var roomId = 0;
 
+var TIME_TO_WAIT_MSG_SENDING = 2000;
+
 var MAX_NR_PEOPLE_IN_ROOM = 6;
 
+var logFilePath = './logs/logs.log';
 
 var logger = new (winston.Logger) ({
     transports: [
         new (winston.transports.File) ({
-            filename: '../logs/client-profiling.log',
+            filename: logFilePath,
             level: 'verbose'
         })
     ]
@@ -38,8 +46,8 @@ var broadcastClients = [];
 
 var index = 0;
 
-
-fs.writeFile('../logs/client-profiling.log', "", function (err) {
+// Reset Logging File
+fs.writeFile(logFilePath, "", function (err) {
   if (err) return console.log(err);
   
 });
@@ -75,41 +83,19 @@ async.each(_.range(NUM_CLIENTS), function(i, callback) {
     client.roomId = roomId;
     client.clientId = i;
 
-
-    console.log("RoomId: ", roomId+'');
     client.subscribe(roomId+'');
 
 
     client.on("message", function(topic, message) {
 
-        //winston.info("NR :: ", msgNr , " - MSG::", message, "room: ", topic);  
-        
-        // process.nextTick(function(){
-                
-        //     logger.verbose("Message reveiced from room " + topic);
-
-        // });
-
         var time = new Date().getTime();
-        // var message = "Message reveiced from room " + topic + " ";
-        //     message += JSON.stringify({
-        //             room: this.roomId,
-        //             time: time,
-        //             clientId: this.clientId
-        //         });
-        //     message += "\n";
+        var message = "Msg \t"+topic+"\t"+time+"\t"+this.clientId+"\n";
 
 
-        var message = "Msg \t"+topic+"\t"+time+"\t"+this.clientId+"\n"
-
-
-        fs.appendFile('../logs/client-profiling.log', message, function (err) {
+        fs.appendFile(logFilePath, message, function (err) {
           if (err) return console.log(err);
-          console.log("Message reveiced from room " + topic);
+          
         });
-
-        
-
 
         msgNr++;
     });
@@ -127,28 +113,33 @@ async.each(_.range(NUM_CLIENTS), function(i, callback) {
             
             var time = new Date().getTime();
 
-            // logger.verbose("Message sent from room " + client.roomId, {
-            //     room: client.roomId,
-            //     time: time,
-            //     clientId: client.clientId
-            // });
+            var message = "Msg \t"+client.roomId+"\t"+time+"\t"+client.clientId+"\n";
 
-
-            var message = "Msg \t"+client.roomId+"\t"+time+"\t"+client.clientId+"\n"
-
-            fs.appendFile('../logs/client-profiling.log', message, function (err) {
+            fs.appendFile(logFilePath, message, function (err) {
               if (err) return console.log(err);
-              console.log("Message send from room ");
             });
-
-
-            console.log("Message to room: ", client.roomId+'')
 
             client.publish(client.roomId+'', "Hello World");
 
         });
 
-    }, 2000);
+        setTimeout(function(d, i){
+            winston.info("Assemble results");
+        
+            function puts(error, stdout, stderr) { 
+                
+                sys.puts(stdout);
+                process.exit(0);
+            }
+            exec("sh ./date_diff.sh", puts);
+            
+
+        }, TIME_TO_WAIT_MSG_SENDING);
+
+
+
+
+    }, TIME_TO_WAIT_MSG_SENDING);
 
 
 
