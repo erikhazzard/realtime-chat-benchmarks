@@ -44,7 +44,12 @@ Notes...
 
    ```
 
-### Setup 1: 1 Server, 1000 Clients, Logs results
+### Setup 2: 1 Server, x rooms / a 6 people
+This test case tests the time it takes to send one message to x rooms, where each
+rooms is filled with maximum 6 people.
+
+The **client-profiling.js** node.js script, creates these rooms and clients within the rooms
+and sends after the initialization phase one message to each memeber of the room.
 
    ```bash
     # Start server
