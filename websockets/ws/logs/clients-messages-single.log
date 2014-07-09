@@ -17275,3 +17275,4 @@
 {"message":"Broadcasting message: {\"roomId\":287,\"time\":1404780308336,\"message\":\"hello world\"} at 1404780308337","time":1404780308337,"level":"verbose","timestamp":"2014-07-08T00:45:08.337Z"}
 {"message":"Broadcasting message: {\"roomId\":288,\"time\":1404780308385,\"message\":\"hello world\"} at 1404780308386","time":1404780308386,"level":"verbose","timestamp":"2014-07-08T00:45:08.386Z"}
 {"message":"Broadcasting message: {\"roomId\":289,\"time\":1404780308385,\"message\":\"hello world\"} at 1404780308387","time":1404780308387,"level":"verbose","timestamp":"2014-07-08T00:45:08.387Z"}
+{"message":"Broadcasting message: {\"roomId\":0,\"time\":1404862643123,\"message\":\"hello world\"} at 1404862643134","time":1404862643134,"level":"verbose","timestamp":"2014-07-08T23:37:23.135Z"}
