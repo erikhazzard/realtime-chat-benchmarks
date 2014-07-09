@@ -8,7 +8,7 @@ Notes...
 * Authorize Functionalitty in 
 
 
-# Commands to start Moquitto
+## Commands to start Moquitto
    ```bash
     #Start server
     mosquitto -p 1111    
@@ -20,6 +20,23 @@ Notes...
     #Start Subscriber
     mosquitto_sub -t "topic_xyz" -v
    ```
+
+## Setup 1:  X nr of rooms a 6 people
+   ```bash
+    # Start server
+    cd test-rooms-1
+    node server-profiling.js
+  
+    # In a new window
+    # Spawn clients
+    node client-profiling.js
+
+    # In a new window
+    # Add a client to each room & broadcast messages to all members of the room
+    node broadcast-messages.js
+
+   ```
+
    
 
 
@@ -31,8 +48,7 @@ Notes...
 
 - 20.000 concurrent connections (simulating chat rooms)
   ->
-  People: 
-    - Andy Piper
+
 
   Chat:
 
@@ -48,16 +64,17 @@ Notes...
 -> Rountrip time for all message of a room (6 people)
 
 
--> Feed simulation: 10k,20k connected clients total time to propagate one message to everyone
-  -> total time
-  -> avg time
+* Feed simulation: 10k,20k connected clients total time to propagate one message to everyone
+ * Total time
+ * Avg time
 
-
--> ZeroMq backend
+* ZeroMq backend
 
 Test: Check the with Rabittmq + Mqtt setup throughput
 ->ZeroMq: Throughput 60k-70k
 
+### People of Interest: 
+  * Andy Piper
 
 
 
