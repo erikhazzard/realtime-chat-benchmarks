@@ -3,7 +3,7 @@
 
 ### Ideas
 * Test random join & leave and message receiving
-* Authorize Functionalitty in 
+* Authorize Functionalitty
 * 20.000 concurrent connections (simulating chat rooms)
 * Feed simulation: 10k,20k connected clients total time to propagate one message to everyone
  * Total time
@@ -25,7 +25,6 @@
     #Start server
     $ mosquitto -p 1111    
   
-
     #Call Publisher
     $ mosquitto_pub -t "topic_xyz" -m "Hello World!" 
   
@@ -33,7 +32,7 @@
     $ mosquitto_sub -t "topic_xyz" -v
    ```
 
-### Setup 1:  1 Server, 1000 Clients, Broadscast script
+### Setup 1:  1 Server & x number of clients & broadcast script
 
    ```bash
     # Start server
