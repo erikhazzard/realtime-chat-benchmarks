@@ -46,6 +46,6 @@ var server = http.createServer();
 console.log("SockJS server starting...".yellow);
 console.log("=============================================".yellow);
 
-echo.installHandlers(server, {prefix: '/echo'});
+echo.installHandlers(server, {prefix: '/test'});
 server.listen(9999, '0.0.0.0');
 

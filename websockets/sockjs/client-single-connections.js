@@ -17,7 +17,7 @@ logMemUsage(1500);
 
     // Number of connections to create
 var NUM_CONNECTIONS = 20000,
-    socketUri = "http://localhost:9999/echo",
+    socketUri = "http://localhost:9999/test",
     // array of clients
     clients = [];
 

@@ -1,9 +1,10 @@
 /* =========================================================================
  *
- *  client-messages-single
- *  establishes a single connection and sends a message intermittently
- *  between clients after all clients have connected, logging data to
- *  a log located in ./logs/
+ *  client-single-message-broadcast
+ *
+ *  Creates/connects a bunch of clients to the server and then sends one
+ *  message to see how long it takes for that message to be broadcast to all
+ *  connected clients.
  *
  *
  * ========================================================================= */
@@ -13,6 +14,7 @@ var _ = require('lodash');
 var winston = require('winston');
 var WebSocket = require('ws');
 var colors = require('colors');
+var logMemUsage = require('../../util/mem-usage');
 
 var logger = new (winston.Logger) ({
     transports: [
@@ -23,34 +25,20 @@ var logger = new (winston.Logger) ({
     ]
 });
 
-var NUM_CONNECTIONS = 2000,
-
-    // number of messages to send
-    NUM_MESSAGES = 3000,
+var NUM_CONNECTIONS = 20000,
     NUM_CONCURRENT = 50,
     sockets = [],
-    messages = {};
+    numMessagesReceived = 0;
+    // messages = {};
 
-// Stats overview
-// --------------------------------------
-function format (val){
-    return Math.round(((val / 1024 / 1024) * 1000) / 1000) + 'mb';
-}
-
-var statsId = setInterval(function () {
-    console.log('Memory Usage :: '.bold.green.inverse +
-        ("\tRSS: " + format(process.memoryUsage().rss)).blue +
-        ("\tHeap Total: " + format(process.memoryUsage().heapTotal)).yellow +
-        ("\t\tHeap Used: " + format(process.memoryUsage().heapUsed)).magenta
-    );
-}, 1500);
+logMemUsage(1500);
 
 var numConnections = 0;
 
 process.on('uncaughtException', function (err) {
     console.log('xxxxxxxxxxxxxxxxxx'.bold.yellow);
-    console.log('  UNCAUGHT EXCEPTION '.yellow);
-    console.log(err+'');
+    console.log('\tUNCAUGHT EXCEPTION'.yellow);
+    console.log(err);
     console.log('xxxxxxxxxxxxxxxxxx'.bold.yellow);
 });
 
@@ -79,8 +67,23 @@ async.eachLimit(_.range(NUM_CONNECTIONS), 2000, function (i, cb) {
         });
 
         ws.on('message', function(data, flags) {
+            // When a message is received, keep track of how many messages
+            // have been received. When it's >= NUM_CONNECTIONS, we know that
+            // all of the clients have received the broadcast
+            // Since we're only broadcasting one message we don't actually
+            // need to keep track of what the message was
+
             // console.log("Client received data: " + data);
 
+            numMessagesReceived++;
+            if (numMessagesReceived >= NUM_CONNECTIONS) {
+                logger.verbose("Finished receiving " + data, {
+                    message: data,
+                    time: new Date().getTime()
+                });
+            }
+
+            /*
             if (messages[data]) {
                 messages[data] = messages[data] + 1;
                 // console.log("Total number of messages received for " + data + ": " + messages[data]);
@@ -93,18 +96,18 @@ async.eachLimit(_.range(NUM_CONNECTIONS), 2000, function (i, cb) {
                 }
             } else {
                 messages[data] = 1;
-                // console.log(messages);
             }
+            */
         });
 
-        ws.on('close', function () {
+        ws.on('close', function onSocketClose() {
             console.log('xxxxxxxxxxxxxxxxxx'.bold.red);
-            console.log('  Disconnected'.red);
+            console.log('\tDisconnected'.red);
             console.log('xxxxxxxxxxxxxxxxxx'.bold.red);
         });
     } catch(err) {
         console.log('xxxxxxxxxxxxxxxxxx'.bold.yellow);
-        console.log('  UNCAUGHT ERROR CONNECTING TO WEBSOCKET '.yellow);
+        console.log('\tUncaught error connecting to WebSocket'.yellow);
         console.log(err+'');
         console.log('xxxxxxxxxxxxxxxxxx'.bold.yellow);
     }
@@ -118,15 +121,4 @@ async.eachLimit(_.range(NUM_CONNECTIONS), 2000, function (i, cb) {
         message: "test",
         time: new Date().getTime()
     });
-
-    // now send a bunch of random messages back and forth
-    /*
-    async.eachLimit(_.range(30), 10, function(i, cb) {
-        setInterval(function() {
-            sockets[i].send("test" + i);
-            logger.verbose("test" + i + " sent at " + (new Date()).getTime());
-            cb();
-        });
-    });
-*/
 });

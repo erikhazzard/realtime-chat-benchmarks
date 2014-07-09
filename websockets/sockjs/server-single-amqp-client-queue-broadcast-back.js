@@ -1,9 +1,11 @@
 /**
  *
- *  server-single-broadcast-back
+ *  server-single-amqp-client-queue-broadcast-back
  *
- *  Single SockJS sever that broadcasts all messages received to all connected
- *  clients
+ *  Single SockJS server that broadcasts all messages back to the clients in
+ *  the room that the sender of the message is currently in.
+ *
+ *  Uses AMQP ?
  *
  */
 
@@ -12,29 +14,32 @@ var sockjs = require('sockjs');
 var sockServer = sockjs.createServer();
 var logMemUsage = require('../../util/mem-usage');
 var colors = require('colors');
+var amqp = require('amqp');
 
 logMemUsage(1500);
 
-var numCloses = 0,
+var numClients = 0,
+    numCloses = 0,
     numErrors = 0;
 
 sockServer.on('connection', function(conn) {
     this.clients = this.clients || [];
     this.clients.push(conn);
-    var numClients = this.clients.length;
 
+    numClients++;
     if (numClients % 500 === 0) {
         console.log(("Client connected! Total: " + numClients).green);
     }
 
-    conn.on('data', function(data) {
+    conn.on('data', function(msg) {
         // Relay message back
         if (sockServer.broadcast) {
-            sockServer.broadcast(data);
+            sockServer.broadcast(msg);
         }
     });
 
     conn.on('close', function() {
+        numClients--;
         numCloses++;
         console.log(("Client closed. Total: " + numCloses).red);
     });
@@ -44,6 +49,7 @@ sockServer.on('connection', function(conn) {
     });
 
 });
+
 
 var server = http.createServer();
 
