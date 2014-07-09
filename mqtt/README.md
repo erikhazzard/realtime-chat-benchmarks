@@ -8,6 +8,21 @@ Notes...
 * Authorize Functionalitty in 
 
 
+# Commands to start Moquitto
+   ```bash
+    #Start server
+    mosquitto -p 1111    
+  
+
+    #Call Publisher
+    mosquitto_pub -t "topic_xyz" -m "Hello World!" 
+  
+    #Start Subscriber
+    mosquitto_sub -t "topic_xyz" -v
+   ```
+   
+
+
 - Benchmark for Ampq
   - Scaling Amqp it self
    -> Rabbitmq or ZeroMq
