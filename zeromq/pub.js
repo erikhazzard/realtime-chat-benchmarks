@@ -1,7 +1,7 @@
 /* =========================================================================
  *
- * producer.js 
- *  sends messages. a consumer consumers them
+ * pub.js 
+ *  sends messages. subs consume them
  *
  * ========================================================================= */
 var zmq = require('zmq');
@@ -17,13 +17,7 @@ var messagesSent = 0;
 socket.bind(port, function(err) {
     console.log('bound!');
 
-    setInterval(function (){
-        console.log("Messages per second: " + (messagesReceived+'').green.bold);
-        messagesSent = 0;
-    }, 1000);
-
     while(true){
-        socket.send('roomid: ' + +new Date());
-        messagesSent++;
+        socket.send('roomid: test');
     }
 });
