@@ -46,10 +46,6 @@ var settings = {
 
 var server = new mosca.Server(settings);
 
-var StringDecoder = require('string_decoder').StringDecoder;
-var decoder = new StringDecoder('utf8');
-
-
 server.on('ready', function setup() {
     winston.info("Mosca server is up and running");
 });
@@ -64,27 +60,6 @@ var start, end, maxNrItems;
 
 // fired when a message is received
 server.on('published', function(packet, client) {
-
-    if(packet.topic == "profiling"){
-        var msg = decoder.write(packet.payload);
-        winston.info("PROFILE MESSAGE")
-
-        if(msg.indexOf("STARTED") !== -1){
-            maxNrItems  = msg.split("-")[1];
-            console.log("Max nr of items: ", maxNrItems)
-            start = new  Date();
-        }
-    }
-
-    if(packet.topic.indexOf("m-") !== -1){
-        var msg = parseInt(decoder.write(packet.payload), 10);
-
-        if(msg === maxNrItems - 1){
-            end = new Date() - start;
-            console.log("Time: ", end/1000, "s");
-        }
-
-    }    
 
 });
 

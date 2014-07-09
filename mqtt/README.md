@@ -6,12 +6,8 @@ Notes...
 
 ### Test Setup A: Server + x Rooms a 5 people + 
 
-
-
 * Test random join & leave and message receiving
-
-
-
+* Authorize Functionalitty in 
 
 
 - Benchmark for Ampq
@@ -34,6 +30,4 @@ Notes...
   Mosca
   Mosquitto
   ZeroMq
-
-
 
