@@ -83,8 +83,6 @@ async.each(_.range(NUM_CLIENTS), function(i, callback) {
     client.roomId = roomId;
     client.clientId = i;
 
-
-    console.log("RoomId: ", roomId+'');
     client.subscribe(roomId+'');
 
 
@@ -96,7 +94,7 @@ async.each(_.range(NUM_CLIENTS), function(i, callback) {
 
         fs.appendFile(logFilePath, message, function (err) {
           if (err) return console.log(err);
-          console.log("Message reveiced from room " + topic);
+          
         });
 
         msgNr++;
@@ -119,11 +117,7 @@ async.each(_.range(NUM_CLIENTS), function(i, callback) {
 
             fs.appendFile(logFilePath, message, function (err) {
               if (err) return console.log(err);
-              console.log("Message send from room ");
             });
-
-
-            console.log("Message to room: ", client.roomId+'')
 
             client.publish(client.roomId+'', "Hello World");
 
