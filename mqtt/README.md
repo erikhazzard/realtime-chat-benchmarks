@@ -14,11 +14,6 @@
 * Test: Check the with Rabittmq + Mqtt setup throughput
 * ZeroMq: Throughput 60k-70k
 
-## Test setup
-  * Mac Book Pro 13"
-  * 2.GHz Intel Core i7
-  * 16GB 1333MHz DDR
-
 
 ## Commands to start Moquitto
    ```bash
@@ -68,6 +63,24 @@ and sends after the initialization phase one message to each memeber of the room
     
     
    ```
+## Test Machines
+  * Machine: roundrobin
+    * Mac Book Pro 13"
+    * 2.GHz Intel Core i7
+    * 16GB 1333MHz DDR
+
+
+
+
+### Results
+| Test           | Machine    | Number Clients | Time in seconds |
+|----------------|------------|----------------|-----------------|
+| Create Clients | roundrobin | 5000           | 30.517s         |
+|                |            |                |                 |
+|                |            |                |                 |
+
+
+
 
 ### People of Interest: 
   * Andy Piper
