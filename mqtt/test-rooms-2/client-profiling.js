@@ -19,7 +19,7 @@ var mqtt = require('mqtt'),
     totalClients = 0;
 
 
-var sys = require('sys')
+var sys = require('sys');
 var exec = require('child_process').exec;
 
 
@@ -89,7 +89,7 @@ async.each(_.range(NUM_CLIENTS), function(i, callback) {
     client.on("message", function(topic, message) {
 
         var time = new Date().getTime();
-        var message = "Msg \t"+topic+"\t"+time+"\t"+this.clientId+"\n"
+        var message = "Msg \t"+topic+"\t"+time+"\t"+this.clientId+"\n";
 
 
         fs.appendFile(logFilePath, message, function (err) {
@@ -113,7 +113,7 @@ async.each(_.range(NUM_CLIENTS), function(i, callback) {
             
             var time = new Date().getTime();
 
-            var message = "Msg \t"+client.roomId+"\t"+time+"\t"+client.clientId+"\n"
+            var message = "Msg \t"+client.roomId+"\t"+time+"\t"+client.clientId+"\n";
 
             fs.appendFile(logFilePath, message, function (err) {
               if (err) return console.log(err);
@@ -128,7 +128,7 @@ async.each(_.range(NUM_CLIENTS), function(i, callback) {
         
             function puts(error, stdout, stderr) { 
                 
-                sys.puts(stdout) 
+                sys.puts(stdout);
                 process.exit(0);
             }
             exec("sh ./date_diff.sh", puts);
