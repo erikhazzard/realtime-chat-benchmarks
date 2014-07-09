@@ -15,7 +15,6 @@ var winston = require('winston');
 var WebSocket = require('ws');
 var colors = require('colors');
 var logMemUsage = require('../../util/mem-usage');
-
 var logger = new (winston.Logger) ({
     transports: [
         new (winston.transports.File) ({

@@ -14,7 +14,7 @@ var mqtt = require('mqtt'),
     winston = require('winston'),
     _ = require('lodash'),
     numCPUs = require('os').cpus().length,
-    NUM_CLIENTS = 100,
+    NUM_CLIENTS = process.argv[2] || 0,
     totalClients = 0;
 
 var msgNr = 0;
@@ -24,6 +24,9 @@ var roomName = "m-" + roomId;
 
 
 var start = new Date();
+
+
+winston.info("Number of client to be initialized: ", NUM_CLIENTS);
 
 async.eachLimit(_.range(NUM_CLIENTS), 20, function(i, callback) {
 
