@@ -1,9 +1,14 @@
 /* =========================================================================
  *
- * clients
+ * Clients:
  *  Starts multiple clients asynchronously and connects all of them to a
  *  channel
+ *  
+ * After creating all clients. The script will send one message to each room
+ * which will be received from every member of the room
  *
+ * After this is done, we call the date_diff.sh shell script, which compares
+ * the first log entry and the last log entry and substract their time stamps
  *
  * ========================================================================= */
 
