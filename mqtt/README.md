@@ -7,6 +7,11 @@ Notes...
 * Test random join & leave and message receiving
 * Authorize Functionalitty in 
 
+## Test setup
+  * Mac Book Pro 13"
+  * 2.GHz Intel Core i7
+  * 16GB 1333MHz DDR
+
 
 ## Commands to start Moquitto
    ```bash
@@ -25,32 +30,33 @@ Notes...
 
    ```bash
     # Start server
-    cd test-rooms-1
-    node server-profiling.js
+    $ cd test-rooms-1
+    $ node server-profiling.js
   
     # In a new window
     # Create x nr of rooms & add 5 clients to each room
     # x can be passed in a CLI argument (ex: 1000)
-    node client-profiling.js 1000
+    $ node client-profiling.js 1000
 
     # In a new window
     # Add a client to each room & broadcast messages to all members of the room
-    node broadcast-messages.js
+    $ node broadcast-messages.js
 
    ```
 
 ### Setup 1: 1 Server, 1000 Clients, Logs results
+
    ```bash
     # Start server
-    cd test-rooms-1
-    node server-profiling.js
+    $ cd test-rooms-2
+    $ node server-profiling.js
   
     # In a new window
-    # Create x nr of rooms. x can be passed in a CLI argument (ex: 1000)
-    node client-profiling.js 1000
+    # Create x nr of rooms. x can be passed in a CLI argument (ex: 20000)
+    $ node client-profiling.js 20000
 
     # In a new window
-    sh date_diff.sh
+    $ sh date_diff.sh
     
    ```
 
