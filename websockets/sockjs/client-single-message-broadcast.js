@@ -1,9 +1,10 @@
 /**
  *
- *  client-single-messages
+ *  client-single-message-broadcast
  *
- *  Creates a lot of connections and then intermittently sends messages from
- *  a bunch of clients.
+ *  Creates a lot of connections and then sends one message to the server.
+ *  Used mainly to calculate the time it takes for one message to be sent
+ *  to all of the clients.
  *
  */
 
@@ -32,9 +33,10 @@ var NUM_CONNECTIONS = 20000,
     socketUri = "http://localhost:9999/test",
     // array of clients
     clients = [],
-    messages = {};
+    numMessagesReceived = 0;
+    //messages = {};
 
-async.eachLimit(_.range(NUM_CONNECTIONS), NUM_CONNECTIONS / 10, function(i, cb) {
+async.eachLimit(_.range(NUM_CONNECTIONS), NUM_CONNECTIONS / 20, function(i, cb) {
     var client = clients[i] = sjsc.create(socketUri);
 
     client.on('connection', function setupConnection() {
@@ -42,11 +44,27 @@ async.eachLimit(_.range(NUM_CONNECTIONS), NUM_CONNECTIONS / 10, function(i, cb) 
         // Send a message
         setTimeout(function() {
             cb();
-        }, 300);
+        }, 2500);
     });
 
     client.on('data', function(data) {
-        console.log("Data received on client " + i + ": " + data);
+        // When a message is received, keep track of how many messages
+        // have been received. When it's >= NUM_CONNECTIONS, we know that
+        // all of the clients have received the broadcast
+        // Since we're only broadcasting one message we don't actually
+        // need to keep track of what the message was
+
+        // console.log("Data received on client " + i + ": " + data);
+
+        numMessagesReceived++;
+        if (numMessagesReceived >= NUM_CONNECTIONS) {
+            logger.verbose("Finished receiving " + data, {
+                message: data,
+                time: new Date().getTime()
+            });
+        }
+
+        /*
         if (messages[data]) {
             messages[data] = messages[data] + 1;
 
@@ -60,6 +78,7 @@ async.eachLimit(_.range(NUM_CONNECTIONS), NUM_CONNECTIONS / 10, function(i, cb) 
         } else {
             messages[data] = 1;
         }
+        */
     });
 
     client.on('error', function(e) {
@@ -69,20 +88,11 @@ async.eachLimit(_.range(NUM_CONNECTIONS), NUM_CONNECTIONS / 10, function(i, cb) 
 }, function onFinishConnectingClients() {
     console.log("Done connecting " + NUM_CONNECTIONS + " connections.");
 
-    var index = 0;
+    var message = "test";
 
-    for (var i = 0; i < NUM_CONCURRENT_SENDERS; i++) {
-        setTimeout(function() {
-            setInterval(function() {
-                clients[index].write(index);
-
-                logger.verbose("Test #" + index + " sent", {
-                    time: new Date().getTime(),
-                    testNum: index
-                });
-
-                index = (index + 1) % clients.length;
-            }, 300);
-        }, 77 * i);
-    }
+    clients[0].send(message);
+    logger.verbose(message + " sent", {
+        message: message,
+        time: new Date().getTime()
+    });
 });
