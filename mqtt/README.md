@@ -34,7 +34,7 @@ Notes...
     $ node server-profiling.js
   
     # In a new window
-    # Create x nr of rooms & add 5 clients to each room
+    # Create x nr of clients
     # x can be passed in a CLI argument (ex: 1000)
     $ node client-profiling.js 1000
 
@@ -45,8 +45,7 @@ Notes...
    ```
 
 ### Setup 2: 1 Server, x rooms / 6 people
-This setup tests the time it takes to send one message to x rooms, where each
-rooms is filled with a maximum number of 6 people.
+This setup tests the time it takes to send one message to x clients, where clients are distrubuted in rooms a 6 people.
 
 The **client-profiling.js** node.js script, creates these rooms and clients within the rooms
 and sends after the initialization phase one message to each memeber of the room.
@@ -57,12 +56,12 @@ and sends after the initialization phase one message to each memeber of the room
     $ node server-profiling.js
   
     # In a new window
-    # Create x nr of rooms. x can be passed in a CLI argument (ex: 20000)
+    # Create x nr of clients. x can be passed in a CLI argument (ex: 20000)
     $ node client-profiling.js 20000
 
     # In a new window
     $ sh date_diff.sh
-    
+
     
    ```
 
