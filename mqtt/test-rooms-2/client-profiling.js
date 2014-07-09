@@ -15,7 +15,7 @@ var mqtt = require('mqtt'),
     _ = require('lodash'),
     numCPUs = require('os').cpus().length,
     fs = require('fs'),
-    NUM_CLIENTS = 1000,
+    NUM_CLIENTS = process.argv[2] || 0,
     totalClients = 0;
 
 var msgNr = 0;

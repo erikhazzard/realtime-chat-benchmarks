@@ -21,21 +21,39 @@ Notes...
     mosquitto_sub -t "topic_xyz" -v
    ```
 
-## Setup 1:  X nr of rooms a 6 people
+### Setup 1:  1 Server, 1000 Clients, Broadscast script
+
    ```bash
     # Start server
     cd test-rooms-1
     node server-profiling.js
   
     # In a new window
-    # Spawn clients
-    node client-profiling.js
+    # Create x nr of rooms & add 5 clients to each room
+    # x can be passed in a CLI argument (ex: 1000)
+    node client-profiling.js 1000
 
     # In a new window
     # Add a client to each room & broadcast messages to all members of the room
     node broadcast-messages.js
 
    ```
+
+### Setup 1: 1 Server, 1000 Clients, Logs results
+   ```bash
+    # Start server
+    cd test-rooms-1
+    node server-profiling.js
+  
+    # In a new window
+    # Create x nr of rooms. x can be passed in a CLI argument (ex: 1000)
+    node client-profiling.js 1000
+
+    # In a new window
+    sh date_diff.sh
+    
+   ```
+
 
    
 
