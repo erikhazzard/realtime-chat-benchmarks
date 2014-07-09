@@ -1,11 +1,18 @@
 # MQTT
 
-Notes...
 
-### Test Setup A: Server + x Rooms a 5 people + 
-
+### Ideas
 * Test random join & leave and message receiving
 * Authorize Functionalitty in 
+* 20.000 concurrent connections (simulating chat rooms)
+* Feed simulation: 10k,20k connected clients total time to propagate one message to everyone
+ * Total time
+ * Avg time
+
+* ZeroMq backend
+* Rountrip time for all message of a room (6 people)
+* Test: Check the with Rabittmq + Mqtt setup throughput
+* ZeroMq: Throughput 60k-70k
 
 ## Test setup
   * Mac Book Pro 13"
@@ -57,50 +64,11 @@ and sends after the initialization phase one message to each memeber of the room
   
     # In a new window
     # Create x nr of clients. x can be passed in a CLI argument (ex: 20000)
+    # The script returns the time in ms it took to send all the messages
     $ node client-profiling.js 20000
-
-    # In a new window
-    $ sh date_diff.sh
-
+    
     
    ```
-
-
-   
-
-
-- Benchmark for Ampq
-  - Scaling Amqp it self
-   -> Rabbitmq or ZeroMq
-- Mqtt
- - if we know that we can handl e x (ex. 20.000)
-
-- 20.000 concurrent connections (simulating chat rooms)
-  ->
-
-
-  Chat:
-
-  Feed:
-
-  RabbitMq
-  Redis
-  Mosca
-  Mosquitto
-  ZeroMq
-
-## Things to test
--> Rountrip time for all message of a room (6 people)
-
-
-* Feed simulation: 10k,20k connected clients total time to propagate one message to everyone
- * Total time
- * Avg time
-
-* ZeroMq backend
-
-Test: Check the with Rabittmq + Mqtt setup throughput
-->ZeroMq: Throughput 60k-70k
 
 ### People of Interest: 
   * Andy Piper
