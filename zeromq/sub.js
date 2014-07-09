@@ -1,7 +1,7 @@
 /* =========================================================================
  *
- * producer.js 
- *  sends messages. a consumer consumers them
+ * sub.js 
+ *  listens for messages
  *
  * ========================================================================= */
 var zmq = require('zmq');
