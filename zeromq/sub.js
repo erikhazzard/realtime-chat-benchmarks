@@ -17,12 +17,24 @@ console.log('connected!');
 
 var messagesReceived = 0;
 
+var start = new Date();
+
+//setInterval(function (){
+    //console.log("Messages per second: " + (messagesReceived+'').green.bold);
+    //messagesReceived = 0;
+//}, 1000);
+
 socket.on('message', function(data) {
     messagesReceived++;
-    setTimeout(function(){}, 1000);
 });
 
-setInterval(function (){
-    console.log("Messages per second: " + (messagesReceived+'').green.bold);
-    messagesReceived = 0;
-}, 1000);
+var closeEverything = function (){
+    var now = new Date();
+    console.log('\n Total time: ', ((now - start) / 1000));
+    console.log('Total messages: ' + (''+messagesReceived).green);
+    console.log('Messages per second: ' + (messagesReceived / ((now - start) / 1000)) );
+    process.exit(1);
+};
+
+process.on('SIGINT', closeEverything);
+process.on('SIGTERM', closeEverything);
