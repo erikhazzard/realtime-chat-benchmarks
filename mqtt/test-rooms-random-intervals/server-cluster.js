@@ -32,8 +32,6 @@ if (cluster.isMaster) {
             ("\tHeap Used: " + format(process.memoryUsage().heapUsed)).magenta +
             ("\t\tNr Clients: " + format2(totalClients).white)+
             ("\t\tReceived Msg: " + msgReceived+"").cyan
-
-    
         );
         
         msgReceived = 0;
