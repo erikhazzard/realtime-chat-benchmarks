@@ -92,12 +92,16 @@ and sends after the initialization phase one message to each memeber of the room
   * Andy Piper
 
 ### Sources
+
 #### Benchmarks
+
 * http://www.infoq.com/news/2011/12/apollo-benchmarks
 * http://qpid.apache.org/download.html
 * http://blog.x-aeon.com/2013/04/10/a-quick-message-queue-benchmark-activemq-rabbitmq-hornetq-qpid-apollo/
 * https://github.com/chirino/stomp-benchmark
+
 #### Other
+
 * http://stackoverflow.com/questions/10030227/maximize-throughput-with-rabbitmq
 * https://news.ycombinator.com/item?id=5531192
 * http://planet.jboss.org/post/8_2_million_messages_second_with_specjms
@@ -106,8 +110,8 @@ and sends after the initialization phase one message to each memeber of the room
 * https://github.com/adamvr/MQTT.js
 
 #### Apollo
-
 * http://activemq.apache.org/apollo/documentation/getting-started.html
+
 ### Topics
 * STOMP
 
