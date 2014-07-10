@@ -5,6 +5,8 @@ import atexit
 
 context = zmq.Context()
 backend = context.socket(zmq.PUB)
+backend.setsockopt(zmq.SNDHWM, 100000000)
+backend.setsockopt(zmq.RCVHWM, 100000000)
 
 port = 'tcp://127.0.0.1:12345'
 backend.bind(port);
