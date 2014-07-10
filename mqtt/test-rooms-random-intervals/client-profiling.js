@@ -21,9 +21,10 @@ var mqtt = require('mqtt'),
     numCPUs = require('os').cpus().length,
     fs = require('fs'),
     NUM_CLIENTS = process.argv[2] || 0,
+    MAX_ITERATIONS = process.argv[3] || Infinity,
     totalClients = 0;
 
-
+var DELAY_BETWEEN_CONCURRENT_SENDERS = 10;
 var sys = require('sys');
 var exec = require('child_process').exec;
 
@@ -37,15 +38,6 @@ var MAX_NR_PEOPLE_IN_ROOM = 6;
 
 var logFilePath = './logs/logs.log';
 
-var logger = new (winston.Logger) ({
-    transports: [
-        new (winston.transports.File) ({
-            filename: logFilePath,
-            level: 'verbose'
-        })
-    ]
-});
-
 var start = new Date();
 var broadcastClients = [];
 
@@ -57,16 +49,22 @@ fs.writeFile(logFilePath, "", function (err) {
   
 });
 
+winston.info("Number of clients to create: ", NUM_CLIENTS);
+
 
 async.each(_.range(NUM_CLIENTS), function(i, callback) {
 
     var client = mqtt.createClient(8883, 'localhost');
 
+
+    if(index === 6){
+        index = 0;
+
+    }
+
     client.on('error', function(e) {
         winston.error("Error", JSON.stringify(e));
     });
-
-    
 
     client.on('connect', function(){
         //winston.info("Connected", this.roomId);
@@ -76,33 +74,25 @@ async.each(_.range(NUM_CLIENTS), function(i, callback) {
 
     });
 
-    if(Math.floor(index / MAX_NR_PEOPLE_IN_ROOM) === 1){
+    if(index === 0){
         roomId++;
         //winston.info("New room, name: ", roomId);
         broadcastClients.push(client);
-        
-        index = 0;
-    
     }
 
-    client.roomId = roomId;
+
+    client.roomId = roomId+'';
     client.clientId = i;
 
     client.subscribe(roomId+'');
 
 
     client.on("message", function(topic, message) {
-
+        //console.log("Message received", topic,message)
         var time = new Date().getTime();
         var message = "Msg \t"+topic+"\t"+time+"\t"+this.clientId+"\n";
+        //fs.appendFile(logFilePath, message, function (err) { if (err) return console.log(err); });
 
-
-        fs.appendFile(logFilePath, message, function (err) {
-          if (err) return console.log(err);
-          
-        });
-
-        msgNr++;
     });
 
     index++;
@@ -112,34 +102,32 @@ async.each(_.range(NUM_CLIENTS), function(i, callback) {
     var end = new Date() - start;
     winston.info("Time to create clients : %ds", end/1000);
 
-    setTimeout(function(d, i){
-        
-        _.each(broadcastClients, function(client, i){
-            
-            var time = new Date().getTime();
+    setTimeout(function(){
+        NUM_CONCURRENT_SENDERS = broadcastClients.length;
+        var client_iterations = [];
 
-            var message = "Msg \t"+client.roomId+"\t"+time+"\t"+client.clientId+"\n";
+        for (var i = 0; i < NUM_CONCURRENT_SENDERS; i++) {
+            client_iterations.push(0);
+            setTimeout(function(index){
+                return function(){
+                    
+                    setInterval(function(index_inner){
+                        
+                        //if()
 
-            fs.appendFile(logFilePath, message, function (err) {
-              if (err) return console.log(err);
-            });
+                        return function(){
+                            //console.log("Index", index_inner)
+                            var client = broadcastClients[index_inner];
+                            client.publish(client.roomId, "Hello World");
+                            client_iterations[index_inner] +=1; 
 
-            client.publish(client.roomId+'', "Hello World");
+                        }
 
-        });
+                    }(index), DELAY_BETWEEN_CONCURRENT_SENDERS * NUM_CONCURRENT_SENDERS);
+                };
+            }(i), DELAY_BETWEEN_CONCURRENT_SENDERS * i);
 
-        setTimeout(function(d, i){
-            winston.info("Assemble results");
-        
-            function puts(error, stdout, stderr) { 
-                
-                sys.puts(stdout);
-                process.exit(0);
-            }
-            exec("sh ./date_diff.sh", puts);
-            
-
-        }, TIME_TO_WAIT_MSG_SENDING);
+        }
 
 
 
