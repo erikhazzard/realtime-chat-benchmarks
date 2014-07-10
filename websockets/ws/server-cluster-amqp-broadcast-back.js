@@ -6,6 +6,8 @@
  *  time to see how long it takes for a message to propagate from a
  *  client to all clients
  *
+ *  Uses AMQP for all messages
+ *
  *  DOES NOT WORk :(
  *
  */
@@ -36,9 +38,10 @@ function format(val) {
 
 if (cluster.isMaster) {
     console.log("\t\t\tWS Server starting".bold.blue);
-    console.log("================================================================");
+    console.log("============================================================");
 
     var statsId = setInterval(function () {
+        // Routinely logs process stats
         console.log('Memory Usage :: '.bold.green.inverse +
             ("\tRSS: " + format(process.memoryUsage().rss)).blue +
             ("\tHeap Total: " + format(process.memoryUsage().heapTotal)).yellow +

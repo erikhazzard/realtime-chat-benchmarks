@@ -37,15 +37,6 @@ var MAX_NR_PEOPLE_IN_ROOM = 6;
 
 var logFilePath = './logs/logs.log';
 
-var logger = new (winston.Logger) ({
-    transports: [
-        new (winston.transports.File) ({
-            filename: logFilePath,
-            level: 'verbose'
-        })
-    ]
-});
-
 var start = new Date();
 var broadcastClients = [];
 

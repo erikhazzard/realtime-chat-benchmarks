@@ -18,11 +18,11 @@
 ## Commands to start Moquitto
    ```bash
     #Start server
-    $ mosquitto -p 1111    
-  
+    $ mosquitto -p 1111
+
     #Call Publisher
-    $ mosquitto_pub -t "topic_xyz" -m "Hello World!" 
-  
+    $ mosquitto_pub -t "topic_xyz" -m "Hello World!"
+
     #Start Subscriber
     $ mosquitto_sub -t "topic_xyz" -v
    ```
@@ -33,7 +33,7 @@
     # Start server
     $ cd test-rooms-1
     $ node server-profiling.js
-  
+
     # In a new window
     # Create x nr of clients
     # x can be passed in a CLI argument (ex: 1000)
@@ -55,19 +55,24 @@ and sends after the initialization phase one message to each memeber of the room
     # Start server
     $ cd test-rooms-2
     $ node server-profiling.js
-  
+
     # In a new window
     # Create x nr of clients. x can be passed in a CLI argument (ex: 20000)
     # The script returns the time in ms it took to send all the messages
     $ node client-profiling.js 20000
-    
-    
+
+
    ```
 ## Test Machines
   * Machine: roundrobin
     * Mac Book Pro 13"
     * 2.GHz Intel Core i7
     * 16GB 1333MHz DDR
+
+  * Machine: denniszhao
+    * Macbook Air 13"
+    * 1.3 GHz Intel Core i5
+    * 8GB 1600MHz DDR3
 
 
 
@@ -76,13 +81,13 @@ and sends after the initialization phase one message to each memeber of the room
 | Test           | Machine    | Number Clients | Time in seconds |
 |----------------|------------|----------------|-----------------|
 | Create Clients | roundrobin | 5000           | 30.517s         |
+| Create Clients | denniszhao | 20000          | 65.008s         |
 |                |            |                |                 |
-|                |            |                |                 |
 
 
 
 
-### People of Interest: 
+### People of Interest:
   * Andy Piper
 
 
