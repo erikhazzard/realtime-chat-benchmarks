@@ -105,25 +105,50 @@ async.each(_.range(NUM_CLIENTS), function(i, callback) {
     setTimeout(function(){
         NUM_CONCURRENT_SENDERS = broadcastClients.length;
         var client_iterations = [];
+        var intervalIds = [];
 
         for (var i = 0; i < NUM_CONCURRENT_SENDERS; i++) {
             client_iterations.push(0);
-            setTimeout(function(index){
-                return function(){
+            setTimeout(function (index){
+                return function (){
                     
-                    setInterval(function(index_inner){
+                    var timerId = setInterval(function (index_inner){
                         
-                        //if()
+                            return function () {
+                                
 
-                        return function(){
-                            //console.log("Index", index_inner)
-                            var client = broadcastClients[index_inner];
-                            client.publish(client.roomId, "Hello World");
-                            client_iterations[index_inner] +=1; 
+                                if(MAX_ITERATIONS < Infinity && client_iterations[index_inner] < MAX_ITERATIONS){
+                                    console.log("Message", index_inner)
+                                    //console.log("Index", index_inner)
+                                    var client = broadcastClients[index_inner];
+                                    client.publish(client.roomId, "Hello World");
+                                    client_iterations[index_inner] +=1; 
 
-                        }
+                                }else{
+                                  console.log("Cleared Interval")
+                                  clearInterval(intervalIds[index_inner]);  
+                                  if(index_inner == MAX_ITERATIONS){
+                                    
+                                    setTimeout(function(d, i){
+                                        
+                                        console.log("Finished"); 
+
+                                        process.exit(0);
+
+                                    }, 1000);
+                                  }
+
+                                }
+
+                            }    
+                        
+
+                        
 
                     }(index), DELAY_BETWEEN_CONCURRENT_SENDERS * NUM_CONCURRENT_SENDERS);
+
+                    intervalIds.push(timerId);
+
                 };
             }(i), DELAY_BETWEEN_CONCURRENT_SENDERS * i);
 
