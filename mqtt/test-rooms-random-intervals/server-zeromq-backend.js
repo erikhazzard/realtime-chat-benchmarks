@@ -10,7 +10,7 @@ var cluster = require('cluster'),
     colors = require('colors'),
     winston = require('winston');
 
-var numCPUs = require('os').cpus().length;
+var numCPUs = 1;//require('os').cpus().length;
 
 var totalClients = 0;
 var msgReceived = 0;
@@ -64,10 +64,12 @@ if (cluster.isMaster) {
     workerId = cluster.worker.id;
 
     var ascoltatore = {
-        type: 'amqp',
+        type: 'zmq',
         json: false,
-        amqp: require('amqp'),
-        exchange: 'ascolatore5672'
+        amqp: require('zmq'),
+        port: "tcp://127.0.0.1:33333",
+        controlPort: "tcp://127.0.0.1:33334",
+        delay: 10
     };
 
     var settings = {
