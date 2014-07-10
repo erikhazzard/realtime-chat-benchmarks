@@ -8,6 +8,7 @@
 * Feed simulation: 10k,20k connected clients total time to propagate one message to everyone
  * Total time
  * Avg time
+ * Test other peoples servers!
 
 * ZeroMq backend
 * Rountrip time for all message of a room (6 people)
@@ -84,6 +85,27 @@ and sends after the initialization phase one message to each memeber of the room
 
 ### People of Interest: 
   * Andy Piper
+
+### Sources
+#### Benchmarks
+* http://www.infoq.com/news/2011/12/apollo-benchmarks
+* http://qpid.apache.org/download.html
+* http://blog.x-aeon.com/2013/04/10/a-quick-message-queue-benchmark-activemq-rabbitmq-hornetq-qpid-apollo/
+* https://github.com/chirino/stomp-benchmark
+#### Other
+* http://stackoverflow.com/questions/10030227/maximize-throughput-with-rabbitmq
+* https://news.ycombinator.com/item?id=5531192
+* http://planet.jboss.org/post/8_2_million_messages_second_with_specjms
+* https://github.com/mcollina/mosca
+* https://github.com/mcollina/ascoltatori
+* https://github.com/adamvr/MQTT.js
+
+#### Apollo
+
+* http://activemq.apache.org/apollo/documentation/getting-started.html
+### Topics
+* STOMP
+
 
 
 
