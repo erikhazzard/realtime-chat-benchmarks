@@ -26,6 +26,7 @@ var start = new Date();
 
 socket.on('message', function(data) {
     messagesReceived++;
+    console.log(messagesReceived);
 });
 
 var closeEverything = function (){

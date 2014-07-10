@@ -1,7 +1,7 @@
 /* =========================================================================
  *
- * sub.js 
- *  listens for published messages
+ * pub.js 
+ *  publishes messages
  *
  * ========================================================================= */
 var colors = require('colors');
@@ -15,25 +15,29 @@ connection.on('error', function(err) {
     console.log('Error: ' + (err+'').red);
 });
 
-var messagesReceived = 0;
-
 connection.on('ready', function(err) {
     //catch redis errors so server doesn't blow up
     console.log('AMQP Server connection established!'.green);
 
-    var queue = connection.queue(
-        'pubsub',
-        function (queue) {
-            console.log('Queue ' + queue.name + ' is open');
+    var exchange = connection.exchange('messages', {
+        type: 'fanout'
+    }, function() {
+        console.log("#messages exchange created");
     });
 
-    queue.subscribe(function queueCallback (message, headers, deliveryInfo, messageObject){
-        // when message is received, increment counter
-        messagesReceived++;
-    });
+    function pub (){
+        console.log('Publishing message...'.bold.green);
 
-    setInterval(function (){
-        console.log("Messages per second: " + (messagesReceived+'').green.bold);
-        messagesReceived = 0;
-    }, 1000);
+        exchange.publish("messages", {
+            action: 'broadcast',
+            message: 'Hello'
+        }, {
+            contentType: 'application/json',
+            contentEncoding: 'utf-8'
+        });
+
+        // call it every n seconds
+        setTimeout(pub, 1000);
+    }
+    pub();
 });
