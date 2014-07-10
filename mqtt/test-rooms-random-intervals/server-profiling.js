@@ -11,6 +11,8 @@ var cluster = require('cluster'),
     winston = require('winston');
 
 var totalClients = 0;
+var msgReceived = 0;
+
 
 function format (val){
     return Math.round(((val / 1024 / 1024) * 1000) / 1000) + 'mb';
@@ -25,8 +27,13 @@ var statsId = setInterval(function () {
         ("\tRSS: " + format(process.memoryUsage().rss)).blue +
         ("\tHeap Total: " + format(process.memoryUsage().heapTotal)).yellow +
         ("\tHeap Used: " + format(process.memoryUsage().heapUsed)).magenta +
-        ("\t\tNr Clients: " + format2(totalClients).white)
+        ("\t\tNr Clients: " + format2(totalClients).white)+
+        ("\t\tReceived Msg: " + msgReceived+"").cyan
+
+
     );
+    msgReceived = 0;
+    
 }, 1500);
 
 var mosca = require('mosca');
@@ -46,20 +53,25 @@ var settings = {
 
 var server = new mosca.Server(settings);
 
+
 server.on('ready', function setup() {
     winston.info("Mosca server is up and running");
 });
 
 server.on('clientConnected', function(client) {
     totalClients++;
-    console.log("Client #" + client.id + " connected to server. Num Clients : " + 
-        totalClients); 
+    // console.log("Client #" + client.id + " connected to server. Num Clients : " + 
+    //     totalClients); 
 });
 
 var start, end, maxNrItems;
 
 // fired when a message is received
 server.on('published', function(packet, client) {
+    
+    if(client){
+        msgReceived++;
+    }
 
 });
 
@@ -74,3 +86,8 @@ server.on('error', function(err) {
     totalClients--;
     console.log("Error : num clients" + totalClients);
 });
+
+
+
+
+
