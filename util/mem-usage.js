@@ -5,6 +5,7 @@
 */
 
 var colors = require('colors');
+
 function format(val) {
     return Math.round(((val / 1024 / 1024) * 1000) / 1000) + 'mb';
 }
