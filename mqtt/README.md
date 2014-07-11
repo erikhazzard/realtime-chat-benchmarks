@@ -120,6 +120,7 @@ Running```$node client-profiling.js NR_OF_CLIENTS NR_OF_ITERATIONS```
 | Clust       | Send Msg         | roundrobin   | 1 per room   | 10.000     | 2            | 2.680 s   | 136.35 s   | 9.72 %   | 20000 |  
 | Normal      | Send Msg         | roundrobin   | 1 per room   | 30.000     | 2            | 8.277 s   | 403.04 s   |          |       |  
 | Clust       | Send Msg         | roundrobin   | 1 per room   | 30.000     | 2            | 8.277 s   | 403.04 s   |          |       |  
+| Clust       | Send Msg         | roundrobin   | 1 per room   | 30.000     | 2            | 4.131 s   | 403.01 s   |          | 60000 |  
 | Clust       | Send Msg         | roundrobin   | 6 per room   | 100        | 100          | 2.690 s   | 207.06 s   | 10.35 %  | 59200 |  
 
 
@@ -158,6 +159,8 @@ Running```$node client-profiling.js NR_OF_CLIENTS NR_OF_ITERATIONS```
 
 #### Mqtt Scaling
 * https://www.youtube.com/watch?v=WFfciQ1U_lU
+* http://de.slideshare.net/kellogh/mqtt-kafka-33100776
+* https://groups.google.com/forum/#!topic/mqtt/neK3DeCP-vk
 
 ### Topics
 * STOMP
@@ -165,8 +168,12 @@ Running```$node client-profiling.js NR_OF_CLIENTS NR_OF_ITERATIONS```
 * Websockets
 * IBM WebShere MQ
 * Amazon SQS
+* Apache Kafka (Pub/Sub)
+* $SYS
 * Clustering
   * Discovery or fixed configured IP addresses of cluster members
+  
+
 
 
 
