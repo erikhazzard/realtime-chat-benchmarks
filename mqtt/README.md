@@ -100,7 +100,7 @@ and sends after the initialization phase one message to each memeber of the room
 
 
 ### How long does it takes to send 1 message to x clients? (x rooms a 6 people) 
-| Type      | Test           | Machine    | Senders    | Clients  | Iterations | Avg Time | Total    | CPU Avg| #Msg| 
+| Type      | Test           | Machine    | Senders    | Clients  | Iterat. | Avg Time | Total    | CPU Avg| #Msg| 
 |-----------|----------------|------------|------------|---------:|-----------:| --------:|---------:|-------:|----:|
 | Clust | Send Msg   | roundrobin | 1 per room |     5000 | 2          | 2.141 s  | 69.72 s  |        ||
 | Clust | Send Msg   | roundrobin | 1 per room |   10.000 | 2          | 2.287 s  | 136.36 s |        ||
