@@ -27,7 +27,6 @@ var DELAY_BETWEEN_CONCURRENT_SENDERS = 20;
 var sys = require('sys');
 var exec = require('child_process').exec;
 
-
 var msgNr = 0;
 var roomId = 0;
 
@@ -37,6 +36,7 @@ var MAX_NR_PEOPLE_IN_ROOM = 6;
 
 var logFilePath = './logs/logs.log';
 var logFilePathMgAvg = './logs/messageAvg.log';
+var logFilePathCpuAvg = './logs/cpuAvg.log';
 
 var start = new Date();
 var broadcastClients = [];
@@ -99,7 +99,7 @@ async.each(_.range(NUM_CLIENTS), function(i, callback) {
         var timeSpent = time - parseInt(message, 10);
         var message = "Msg \t"+topic+"\t"+timeSpent+"\t"+this.clientId+"\n";
         fs.appendFile(logFilePath, message, function (err) { if (err) return console.log(err); });
-
+        msgNr++;
 
     });
 
@@ -109,7 +109,7 @@ async.each(_.range(NUM_CLIENTS), function(i, callback) {
     //process.exit(1);
     var end = new Date() - start;
     winston.info("Time to create clients : %ds", end / 1000);
-
+    console.log("Nr of senders: ", broadcastClients.length);
 
     var startIntervals = new Date();
 
@@ -144,9 +144,17 @@ async.each(_.range(NUM_CLIENTS), function(i, callback) {
                                     setTimeout(function(d, i){
                                         
                                         console.log("Finished. Time to run all iterations", (new Date() - startIntervals)/1000, "s"); 
+                                        
                                         var column = 2;
-                                        helpers.calcAvg(logFilePath, column, function(d, i){
-                                            process.exit(0);    
+                                        helpers.calcAvg(logFilePath, column, function(val){
+
+                                            console.log("Average MsgTime time (ms): " + val);
+
+                                            helpers.calcAvg(logFilePathCpuAvg, 0, function(val){
+                                                console.log("Average CPU time: " + val.toFixed(2),'%');
+                                                console.log("Message Send Total: ", msgNr);
+                                                process.exit(0);    
+                                            });
                                         });
                                         
 
