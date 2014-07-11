@@ -33,4 +33,10 @@ $ tail -f connection.log
 
 ```
 
+## Connecting to Broker
+```bash
+# 1. Connect to Broker & pass in number of clients (ex: 1000)
+$ node client_receiver.js 1000
+```
+
   

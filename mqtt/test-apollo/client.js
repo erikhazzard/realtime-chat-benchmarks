@@ -1,5 +1,6 @@
 var mqtt = require('mqtt')
 
+
 client = mqtt.createClient(61613, 'localhost', {username: "admin", password: "password"});
 
 client.subscribe('presence');
