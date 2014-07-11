@@ -1,5 +1,5 @@
 # MQTT
-
+This folder contains a bunch of test and benchmarks to  MQTT
 
 ### Ideas
 * Test random join & leave and message receiving
@@ -14,7 +14,8 @@
 * Rountrip time for all message of a room (6 people)
 * Test: Check the with Rabittmq + Mqtt setup throughput
 * ZeroMq: Throughput 60k-70k
-
+* How to maintain session between server ();
+* Keep alive settings
 
 ## Commands to start Moquitto
    ```bash
@@ -27,6 +28,13 @@
     #Start Subscriber
     $ mosquitto_sub -t "topic_xyz" -v
    ```
+
+## Log
+```
+# Log and monitor the cpu usage of a process
+$ watch -t -n 1 "ps -eo pcpu,args | sort -r -k1 |grep '[n]ode client-profiling' | cut -c1-4 | tee -a cpuAvg.log"log"
+
+```
 
 ### Setup 1:  1 Server & x number of clients & broadcast script
 
@@ -79,11 +87,18 @@ and sends after the initialization phase one message to each memeber of the room
 
 
 ### Results
-| Test           | Machine    | Number Clients | Time in seconds |
-|----------------|------------|----------------|-----------------|
-| Create Clients | roundrobin | 5000           | 30.517s         |
-| Create Clients | denniszhao | 20000          | 65.008s         |
-|                |            |                |                 |
+| Test           | Machine    | Number Clients | Time in seconds | Protocol|
+|----------------|------------|----------------|-----------------|---------|
+| Create Clients | roundrobin | 5000           | 30.517s         | MQTT    |
+| Create Clients | roundrobin | 10000          | 72.065s         | MQTT    |
+| Create Clients | denniszhao | 20000          | 65.008s         | WebSock |
+| Create Clients | roundrobin | 20000          | 75.268s         | MQTT    |
+| Create Clients | roundrobin | 30000          | 131.789s        | MQTT    |
+
+
+| Test           | Machine    | Senders    | Clients | Iterations | Avg Time | Total    |
+|----------------|------------|------------|---------|------------| ---------|----------|
+| Send Message   | roundrobin | 1 per room | 30000   | 2          | 8.277    | 403.04 s |
 
 
 
@@ -92,6 +107,10 @@ and sends after the initialization phase one message to each memeber of the room
   * Andy Piper
 
 ### Sources
+
+#### Native MQTT Clients
+* http://www.hivemq.com/overview-of-mqtt-client-tools/
+* http://www.banym.de/m2m/first-very-basic-mqtt-mac-app
 
 #### Benchmarks
 
@@ -114,6 +133,10 @@ and sends after the initialization phase one message to each memeber of the room
 
 ### Topics
 * STOMP
+* EventSource iOS?
+* Websockets
+* IBM WebShere MQ
+
 
 
 

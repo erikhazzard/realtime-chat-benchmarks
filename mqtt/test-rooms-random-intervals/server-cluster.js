@@ -8,7 +8,8 @@
  * ========================================================================= */
 var cluster = require('cluster'),
     colors = require('colors'),
-    winston = require('winston');
+    winston = require('winston'),
+    fs = require('fs');
 
 var numCPUs = require('os').cpus().length;
 

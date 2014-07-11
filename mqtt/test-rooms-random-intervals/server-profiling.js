@@ -8,8 +8,11 @@
  * ========================================================================= */
 var cluster = require('cluster'),
     colors = require('colors'),
-    winston = require('winston');
+    winston = require('winston'),
+    fs = require('fs');
 
+
+var logFilePathMgAvg = './logs/messageAvg.log';
 var totalClients = 0;
 var msgReceived = 0;
 
@@ -32,6 +35,11 @@ var statsId = setInterval(function () {
 
 
     );
+
+    fs.appendFile(logFilePathMgAvg, msgReceived+"\n", function (err) {
+      if (err) return console.log(err);
+    });
+
     msgReceived = 0;
     
 }, 1500);

@@ -82,9 +82,10 @@ async.each(_.range(NUM_CLIENTS), function(i, callback) {
     if(index === 0){
         roomId++;
         //winston.info("New room, name: ", roomId);
-        broadcastClients.push(client);
+        
     }
 
+    broadcastClients.push(client);
 
     client.roomId = roomId+'';
     client.clientId = i;
