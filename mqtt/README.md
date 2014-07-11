@@ -102,7 +102,9 @@ and sends after the initialization phase one message to each memeber of the room
 
 ## Results
 ### How long does it takes to connect clients?
+
 Running```$node client-profiling.js NR_OF_CLIENTS NR_OF_ITERATIONS```
+
 | Type    | Test           | Machine    | Number Clients  | Time in seconds | Protocol| Broker  | Env   |
 |---------|----------------|------------|----------------:|----------------:|---------|---------|-------|
 | Normal  | Create Clients | roundrobin |           5000  | 30.517s         | MQTT    | RabbitMQ| Local |
@@ -116,11 +118,12 @@ Running```$node client-profiling.js NR_OF_CLIENTS NR_OF_ITERATIONS```
 ### How long does it takes to send 1 message to x clients? (x rooms a 6 people) 
 | Type        | Test             | Machine      | Senders      | Clients    | Iterat.      | Avg Time  | Total      | CPU Avg  | #Msg  |  
 | ----------- | ---------------- | ------------ | ------------ | ---------: | -----------: | --------: | ---------: | -------: | ----: |  
-| Clust       | Send Msg         | roundrobin   | 1 per room   | 5000       | 2            | 1.841 s   | 69.71 s    | 8.21 %   | 10000 |  
+| Clust       | Send Msg         | roundrobin   | 1 per room   | 5000       | 2            | 1.841 s   | 69.71  s   | 8.21 %   | 10000 |  
 | Clust       | Send Msg         | roundrobin   | 1 per room   | 10.000     | 2            | 2.680 s   | 136.35 s   | 9.72 %   | 20000 |  
 | Normal      | Send Msg         | roundrobin   | 1 per room   | 30.000     | 2            | 8.277 s   | 403.04 s   |          |       |  
 | Clust       | Send Msg         | roundrobin   | 1 per room   | 30.000     | 2            | 8.277 s   | 403.04 s   |          |       |  
 | Clust       | Send Msg         | roundrobin   | 1 per room   | 30.000     | 2            | 4.131 s   | 403.01 s   |          | 60000 |  
+| Clust       | Send Msg         | roundrobin   | 1 per room   | 30.000     | 3            | 19.07 s   | 126.42 s   |          | 90000 |  
 | Clust       | Send Msg         | roundrobin   | 6 per room   | 100        | 100          | 2.690 s   | 207.06 s   | 10.35 %  | 59200 |  
 
 
@@ -162,6 +165,10 @@ Running```$node client-profiling.js NR_OF_CLIENTS NR_OF_ITERATIONS```
 * http://de.slideshare.net/kellogh/mqtt-kafka-33100776
 * https://groups.google.com/forum/#!topic/mqtt/neK3DeCP-vk
 
+#### Mqtt as a Service
+  * CloudMQTT (http://www.cloudmqtt.com/)
+  * HiveMQ (http://www.hivemq.com/)
+
 ### Topics
 * STOMP
 * EventSource iOS?
@@ -172,7 +179,9 @@ Running```$node client-profiling.js NR_OF_CLIENTS NR_OF_ITERATIONS```
 * $SYS
 * Clustering
   * Discovery or fixed configured IP addresses of cluster members
-  
+* Bridging vs. Clustering
+
+
 
 
 
