@@ -22,13 +22,13 @@ var logMemUsage = require('../../../util/mem-usage');
 var returnTimes = {};
 
     // Total # connections
-var NUM_CONNECTIONS = process.argv[2] || 20000,
+var NUM_CONNECTIONS = process.argv[2] || 2000,
     MAX_ITERATIONS = process.argv[3] || 10,
     NUM_CONCURRENT_SENDERS = 300,
     DELAY_BETWEEN_CONCURRENT_SENDERS = 20,
     NUM_PEOPLE_IN_ROOM = 6,
-    MAX_NUM_MESSAGES = 5000000,
-    LOG_FILE_PATH = 'logs/amqp-rooms-messages.log',
+    MAX_NUM_MESSAGES = 100000,
+    LOG_FILE_PATH = 'logs/throughput.log',
     sockets = [],
     messages = {};
 
@@ -57,7 +57,7 @@ fs.writeFile(LOG_FILE_PATH, "ROOM_ID\tTIME_DIFF\n", function (err) {
 
 // Spawn connections
 // --------------------------------------
-async.eachLimit(_.range(NUM_CONNECTIONS), NUM_CONNECTIONS / 10, function (i, cb) {
+async.eachLimit(_.range(NUM_CONNECTIONS), 2000, function (i, cb) {
     try {
         // Just use floor(i / 6) as room ID for now; ensures
         // at most 6 in a room
@@ -68,7 +68,7 @@ async.eachLimit(_.range(NUM_CONNECTIONS), NUM_CONNECTIONS / 10, function (i, cb)
             origin: 'http://localhost:3000'
         });
 
-        // console.log(('Connecting ('+i+') to room #' + roomId + '...').grey);
+        console.log(('Connecting ('+i+') to room #' + roomId + '...').grey);
 
         // Setup connections, open connection
         ws.on('open', function setupConnection() {
@@ -79,11 +79,12 @@ async.eachLimit(_.range(NUM_CONNECTIONS), NUM_CONNECTIONS / 10, function (i, cb)
                 socketId: i
             }));
 
-            // console.log('Connected'.green.bold + ' | Num connections : ' + (''+sockets.length).blue);
+            console.log('Connected'.green.bold +
+                ' | Num connections : ' + (''+sockets.length).blue);
 
             // continue
             setTimeout(function(){
-                // console.log('\t calling callback...');
+                console.log('\t calling callback...');
                 cb();
             }, 300);
         });
@@ -97,7 +98,7 @@ async.eachLimit(_.range(NUM_CONNECTIONS), NUM_CONNECTIONS / 10, function (i, cb)
 
             if (returnTimes[roomId]) {
                 returnTimes[roomId]++;
-                // console.log(returnTimes[roomId]);
+                console.log(returnTimes[roomId]);
 
                 if (returnTimes[roomId] >= NUM_PEOPLE_IN_ROOM) {
                     // All of the clients in the room have received messages
@@ -112,7 +113,7 @@ async.eachLimit(_.range(NUM_CONNECTIONS), NUM_CONNECTIONS / 10, function (i, cb)
                 returnTimes[roomId] = 1;
             }
 
-            // console.log("Message received from server: " + data);
+            console.log("Message received from server: " + data);
         });
 
         ws.on('close', function () {
@@ -151,8 +152,6 @@ async.eachLimit(_.range(NUM_CONNECTIONS), NUM_CONNECTIONS / 10, function (i, cb)
         roomId = (roomId + 1) % Math.floor(sockets.length / NUM_PEOPLE_IN_ROOM);
     };
 
-    NUM_CONCURRENT_SENDERS = Math.ceil(sockets.length / NUM_PEOPLE_IN_ROOM);
-
     setTimeout(function(){
         // NUM_CONCURRENT_SENDERS = broadcastClients.length;
         var client_iterations = [];
@@ -174,7 +173,7 @@ async.eachLimit(_.range(NUM_CONNECTIONS), NUM_CONNECTIONS / 10, function (i, cb)
                                 } else {
                                   console.log("Cleared Interval")
                                   clearInterval(intervalIds[index_inner]);
-                                  if (index_inner == intervalIds.length - 1) {
+                                  if (index_inner == MAX_ITERATIONS) {
                                     setTimeout(function(d, i){
                                         console.log("Finished");
                                         process.exit(0);

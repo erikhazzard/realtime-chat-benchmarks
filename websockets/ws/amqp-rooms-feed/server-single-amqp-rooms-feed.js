@@ -1,15 +1,15 @@
 /**
  *
- *  server-single-amqp-room-queue-broadcast-back
+ *  server-single-amqp-rooms-feed
  *
  *  Non-clustered node server responsible for broadcasting any
- *  received messages back to the client by first communicating
- *  through AMQP
+ *  received messages back to the client and all other clients subscribed to
+ *  that room by first communicating through AMQP
  *
- *  This benchmark creates a queue for each room as opposed to each
- *  client and stores information about which sockets are connected
- *  to which queue; after a messages is received from the queue, it
- *  gets broadcasted to all of the sockets associated to the queue.
+ *  This constructs a queue for each client and publishes messages
+ *  back through the queue because it's subscribed to a room's exchange
+ *
+ *  File is identical to ../amqp-rooms-messages/server-single-amqp-rooms-messages
  *
  */
 
@@ -20,6 +20,7 @@ var async = require('async');
 var _ = require('lodash');
 var amqp = require('amqp');
 var WebSocketServer = require('ws').Server;
+var logMemUsage = require('../../../util/mem-usage');
 
 WebSocketServer.prototype.broadcast = function(data) {
     // Broadcasts messages to all clients
@@ -44,18 +45,14 @@ var logger = new (winston.Logger) ({
 console.log("\t\t\tWS Server starting".bold.blue);
 console.log("================================================================");
 
-// Stats overview
-// --------------------------------------
-function format (val){
-    return Math.round(((val / 1024 / 1024) * 1000) / 1000) + 'mb';
-}
+logMemUsage(1500);
 
-var statsId = setInterval(function () {
-    console.log('Memory Usage :: '.bold.green.inverse +
-        ("\tRSS: " + format(process.memoryUsage().rss)).blue +
-        ("\tHeap Total: " + format(process.memoryUsage().heapTotal)).yellow +
-        ("\t\tHeap Used: " + format(process.memoryUsage().heapUsed)).magenta
-    );
+var messagesReceived = 0;
+
+setInterval(function () {
+    console.log("# messages received since: " + messagesReceived);
+
+    messagesReceived = 0;
 }, 1500);
 
 // Begin AMQP connection stuff
@@ -65,9 +62,7 @@ var connection = amqp.createConnection({
 
 // Set up AMQP connection
 connection.on('ready', function() {
-    // When an AMQP connection has been established, start the
-    // WebSocket server
-    console.log("AMQP connection established");
+    // When an AMQP connection has been established, start the WebSocket server
 
     var wsServer = new WebSocketServer({ port: 3000 });
 
@@ -76,9 +71,6 @@ connection.on('ready', function() {
     var numClients = 0,
         numCloses = 0,
         numErrors = 0;
-
-    // Array of queues, one for each room
-    var queues = [];
 
     wsServer.on('connection', function (ws) {
         // When a client connects, increase num
@@ -89,84 +81,70 @@ connection.on('ready', function() {
         }
 
         ws.on('message', function (message) {
-            console.log("Received data from client: " + message);
+            // console.log("Received data from client: " + message);
 
             var data = JSON.parse(message),
                 roomId = data.roomId,
+                socketId = data.socketId,
+                time = data.time,
                 content = data.message;
             if (content) {
                 // This is a proper message that needs to be broadcast back to
                 // all clients in the same room
-                logger.verbose("Broadcasting message: " + message +
-                    " at " + (new Date()).getTime(), {
+                /*
+                logger.verbose("Broadcasting message: " + message + " at " +
+                    (new Date()).getTime(), {
                     message: message,
                     time: new Date().getTime()
                 });
+                */
 
-                // Exchange has already been set on socket so just publish
-                // something to the exchange
+                // Exchange has already been set on socket so just publish something to
+                // the exchange
                 // Need to find the right exchange to publish to
+                messagesReceived++;
                 var exchange = connection.exchange('room' + roomId, {
                     type: 'fanout'
                 }, function() {
                     console.log("Got exchange #" + roomId);
 
                     // Somehow optimize to not send back to orig publisher?
-                    // Send a message to the room's exchange so that the
-                    // appropriate queues are notified
+                    // Send a message to the room's exchange so that the appropriate queues
+                    // are notified
                     exchange.publish('key', {
                         roomId: roomId,
-                        content: content
+                        content: content,
+                        time: time,
                     }, {
                         contentType: 'application/json'
                     });
                 });
             } else {
-                // Initial response from client, just the room and socket
-                // information. Here we create an exchange for the room and
-                // queue for the socket and AMQP Exchange
+                // Initial response from client, just the room and socket information
+                // Here we create an exchange for the room and queue for the
+                // socket and AMQP Exchange
                 var ex = connection.exchange('room' + roomId, {
                     type: 'fanout'
                 }, function() {
-                    console.log("room" + roomId + " exchange set");
+                    // console.log("room" + roomId + " exchange set to socket " + socketId);
                 });
 
-                if (queues[roomId]) {
-                    // Room has been created; just add to the sockets array
-                    queues[roomId].sockets.push(ws);
-                } else {
-                    // If the queue hasn't already been created, create it
-                    var q = connection.queue('queue-' + roomId, function(q) {
-                        // Bind queue to exchange
-                        q.bind(ex, 'key'); // key not needed bc fanout
+                var queue = connection.queue('queue-' + socketId, function(q) {
+                    console.log("Queue created for socket #" + socketId);
+                    // Bind queue to exchange
+                    q.bind(ex, 'key'); // key not needed bc fanout
 
-                        q.subscribe(function(data) {
-                            // When a message is received in the queue, send
-                            // that back to all of the queue's web sockets
-                            console.log("Message received on queue " + q.name +
-                                ": " + data);
-                            var roomId = data.roomId,
-                                sockets = queues[roomId].sockets;
-
-                            for (var i = 0; i < sockets.length; i++) {
-                                sockets[i].send(JSON.stringify(data));
-                            }
-                        });
+                    q.subscribe(function(data) {
+                        // When a message is received in the queue, send that back
+                        // to the appropriate web socket
+                        console.log("Message received on queue " + q.name + ": " + data);
+                        ws.send(JSON.stringify(data));
                     });
-
-                    // Use object to store all of the sockets
-                    var queue = {
-                        queue: q,
-                        sockets: [ws]
-                    };
-
-                    queues[roomId] = queue;
-                }
+                });
             }
         });
 
         ws.on('close', function() {
-            // TODO: logic to remove the socket from the queues array
             numClients--;
             numCloses++;
             console.log(('Client closed; total number of closes: ' + numCloses).bold.red);

@@ -8,11 +8,9 @@
  * ========================================================================= */
 var cluster = require('cluster'),
     colors = require('colors'),
-    winston = require('winston'),
-    fs = require('fs');
+    winston = require('winston');
 
-var numCPUs = require('os').cpus().length;
-var logFilePathMgAvg = './logs/messageAvg.log';
+var numCPUs = 1;//require('os').cpus().length;
 
 var totalClients = 0;
 var msgReceived = 0;
@@ -26,10 +24,6 @@ function format2 (val){
     return val+ '';
 }
 
-fs.appendFile(logFilePathMgAvg, msgReceived+"\n", function (err) {
-  if (err) return console.log(err);
-});
-
 if (cluster.isMaster) {
     var statsId = setInterval(function () {
         console.log('Memory Usage :: '.bold.green.inverse +
@@ -38,6 +32,8 @@ if (cluster.isMaster) {
             ("\tHeap Used: " + format(process.memoryUsage().heapUsed)).magenta +
             ("\t\tNr Clients: " + format2(totalClients).white)+
             ("\t\tReceived Msg: " + msgReceived+"").cyan
+
+    
         );
         
         msgReceived = 0;
@@ -53,7 +49,6 @@ if (cluster.isMaster) {
 
             if (msg.msg){
                 msgReceived += 1;
-                fs.appendFile(logFilePathMgAvg, msgReceived+"\n", function (err) { if (err) return console.log(err);});
             }
         });
     }
@@ -69,10 +64,12 @@ if (cluster.isMaster) {
     workerId = cluster.worker.id;
 
     var ascoltatore = {
-        type: 'amqp',
+        type: 'zmq',
         json: false,
-        amqp: require('amqp'),
-        exchange: 'ascolatore5672'
+        amqp: require('zmq'),
+        port: "tcp://127.0.0.1:33333",
+        controlPort: "tcp://127.0.0.1:33334",
+        delay: 10
     };
 
     var settings = {
