@@ -10,17 +10,19 @@
 
 require("http").globalAgent.maxSockets = Infinity;
 var WebSocketServer = require('ws').Server,
-    wsServer = new WebSocketServer({port: 3000});
+    wsServer = new WebSocketServer({ port: 3000 });
 var colors = require('colors');
 var winston = require('winston');
 var async = require('async');
 var _ = require('lodash');
 var logMemUsage = require('../../util/mem-usage');
 
+var LOG_FILE_PATH = 'logs/clients-messages-single.log';
+
 var logger = new (winston.Logger) ({
     transports: [
         new (winston.transports.File) ({
-            filename: 'logs/clients-messages-single.log',
+            filename: LOG_FILE_PATH,
             level: 'verbose'
         })
     ]
@@ -34,7 +36,7 @@ logMemUsage(1500);
 var numCloses = 0,
     numErrors = 0;
 
-// Add a broadcast message to the server
+// Add a broadcast function to the server
 wsServer.broadcast = function(data) {
     // Sends data to all clients
     var numClients = this.clients.length;
@@ -62,8 +64,7 @@ wsServer.on('connection', function setupSocket(ws) {
         console.log(("Received message: " + message).blue);
 
         // Log message to file before broadcast call
-        logger.verbose("Broadcasting message: " + message + " at " +
-            (new Date()).getTime(), {
+        logger.verbose("Broadcasting message: " + message, {
             message: message,
             time: new Date().getTime()
         });

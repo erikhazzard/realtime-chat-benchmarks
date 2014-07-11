@@ -1,3 +1,9 @@
+/**
+ *
+ *  Connects one WebSocket and sends a message containing the current time
+ *
+ */
+
 var WebSocket = require('ws');
 var ws = new WebSocket('ws://localhost:3000/', {
     protocolVersion: 8,
