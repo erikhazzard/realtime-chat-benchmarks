@@ -36,9 +36,7 @@ var statsId = setInterval(function () {
 
     );
 
-    fs.appendFile(logFilePathMgAvg, msgReceived+"\n", function (err) {
-      if (err) return console.log(err);
-    });
+    fs.appendFile(logFilePathMgAvg, msgReceived+"\n", function (err) { if (err) return console.log(err);});
 
     msgReceived = 0;
     
