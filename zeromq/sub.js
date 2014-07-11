@@ -1,6 +1,6 @@
 /* =========================================================================
  *
- * sub.js 
+ * sub.js
  *  listens for messages
  *
  * ========================================================================= */
@@ -26,7 +26,7 @@ var start = new Date();
 
 socket.on('message', function(data) {
     messagesReceived++;
-    console.log(messagesReceived);
+    // console.log(messagesReceived);
 });
 
 var closeEverything = function (){
