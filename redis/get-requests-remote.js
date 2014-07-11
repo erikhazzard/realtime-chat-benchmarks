@@ -42,7 +42,10 @@ async.eachLimit(
             console.log(('\t > ' + i + ' clients connected').blue);
         }
 
-        var client = redis.createClient();
+        var client = redis.createClient(
+            6379,
+            'ec2-54-83-125-112.compute-1.amazonaws.com'
+        );
         client.on("error", function (err) {
             console.log("Error " + err);
         });
