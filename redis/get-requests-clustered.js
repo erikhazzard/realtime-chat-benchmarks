@@ -110,8 +110,6 @@ if (cluster.isMaster) {
                     process.send({ clientsConnected: 1 }); 
 
                     function makeGET(){
-                        if(!FINISHED_CONNECTING){ return false; }
-
                         var getStart = new Date();
                         client.set("roomid", ''+Math.random(), function(){
                             var time = new Date() - getStart;
