@@ -87,18 +87,22 @@ and sends after the initialization phase one message to each memeber of the room
 
 
 ### Results
-| Test           | Machine    | Number Clients | Time in seconds | Protocol|
-|----------------|------------|----------------|-----------------|---------|
-| Create Clients | roundrobin | 5000           | 30.517s         | MQTT    |
-| Create Clients | roundrobin | 10000          | 72.065s         | MQTT    |
-| Create Clients | denniszhao | 20000          | 65.008s         | WebSock |
-| Create Clients | roundrobin | 20000          | 75.268s         | MQTT    |
-| Create Clients | roundrobin | 30000          | 131.789s        | MQTT    |
+| Type    | Test           | Machine    | Number Clients  | Time in seconds | Protocol|
+|---------|----------------|------------|-----------------|-----------------|---------|
+| Normal  | Create Clients | roundrobin | 5000            | 30.517s         | MQTT    |
+| Cluster | Create Clients | roundrobin | 5000            | 3.355s          | MQTT    |
+| Normal  | Create Clients | roundrobin | 10.000          | 72.065s         | MQTT    |
+| Normal  | Create Clients | denniszhao | 20.000          | 65.008s         | WebSock |
+| Normal  | Create Clients | roundrobin | 20.000          | 75.268s         | MQTT    |
+| Normal  | Create Clients | roundrobin | 30.000          | 131.789s        | MQTT    |
 
 
-| Test           | Machine    | Senders    | Clients | Iterations | Avg Time | Total    |
-|----------------|------------|------------|---------|------------| ---------|----------|
-| Send Message   | roundrobin | 1 per room | 30000   | 2          | 8.277    | 403.04 s |
+
+| Type      | Test           | Machine    | Senders    | Clients  | Iterations | Avg Time | Total    |
+|-----------|----------------|------------|------------|----------|------------| ---------|----------|
+| Clustered | Send Message   | roundrobin | 1 per room | 5000     | 2          | 2.141    | 69.72 s  |
+| Normal    | Send Message   | roundrobin | 1 per room | 30.000   | 2          | 8.277    | 403.04 s |
+| Clustered | Send Message   | roundrobin | 1 per room | 30.000   | 2          | 8.277    | 403.04 s |
 
 
 
@@ -131,11 +135,16 @@ and sends after the initialization phase one message to each memeber of the room
 #### Apollo
 * http://activemq.apache.org/apollo/documentation/getting-started.html
 
+#### Load balance MQTT
+* http://www.hivemq.com/building-a-high-availability-mqtt-cluster/
+
 ### Topics
 * STOMP
 * EventSource iOS?
 * Websockets
 * IBM WebShere MQ
+* Clustering
+  * Discovery or fixed configured IP addresses of cluster members
 
 
 
