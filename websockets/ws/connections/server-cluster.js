@@ -2,32 +2,22 @@
  *
  *  server-cluster
  *
- *  Spawns a cluster of WebSocket servers
+ *  Spawns a cluster of WebSocket servers that echo the message back
  *
  */
 
 var colors = require('colors');
 var cluster = require('cluster');
 var numCPUs = require('os').cpus().length;
-
-// Stats overview
-// --------------------------------------
-function format (val){
-    return Math.round(((val / 1024 / 1024) * 1000) / 1000) + 'mb';
-}
+var logMemUsage = require('../../../util/mem-usage');
+var WebSocketServer = require('ws').Server;
 
 if (cluster.isMaster) {
     // Fork workers.
     console.log("\t\t\tWS Server starting".bold.blue);
-    console.log("================================================================");
+    console.log("==============================================================");
 
-    var statsId = setInterval(function () {
-        console.log('Memory Usage :: '.bold.green.inverse +
-            ("\tRSS: " + format(process.memoryUsage().rss)).blue +
-            ("\tHeap Total: " + format(process.memoryUsage().heapTotal)).yellow +
-            ("\t\tHeap Used: " + format(process.memoryUsage().heapUsed)).magenta
-        );
-    }, 1500);
+    logMemUsage(1500);
 
     for (var i = 0; i < numCPUs; i++) {
         cluster.fork();
@@ -40,21 +30,23 @@ if (cluster.isMaster) {
     // Websocket server
     // --------------------------------------
     console.log(('Worker started! ' + cluster.worker.id).grey);
-    var WebSocketServer = require('ws').Server,
-        wsServer = new WebSocketServer({port: 3000});
+    var wsServer = new WebSocketServer({port: 3000});
 
     var numClients = 0;
 
     wsServer.on('connection', function (ws) {
+        // Callback for when a client connects to the server
         numClients++;
 
-        console.log(("Client connected! : ".bold + numClients).green +
+        console.log(("Client connected! : " + numClients).green +
             '| worker: ' + cluster.worker.id);
 
         ws.on('message', function (message) {
-            console.log(("\treceived message: ".bold + message).blue +
-                '| worker: ' + cluster.worker.id);
-            ws.send('' + (+new Date()) );
+            console.log("Received message: " + message + " from worker " +
+                cluster.worker.id);
+
+            // Echoes message back to socket
+            ws.send(message);
         });
 
         ws.on('close', function () {
@@ -63,8 +55,8 @@ if (cluster.isMaster) {
                 '| worker: ' + cluster.worker.id);
         });
 
-        ws.on('error', function(e) {
-            console.log(('Client #%d error: %s', thisId, e.message).bold.red +
+        ws.on('error', function (e) {
+            console.log(('Client #%d error: %s', thisId, e.message).red +
                 '| worker: ' + cluster.worker.id);
         });
     });
