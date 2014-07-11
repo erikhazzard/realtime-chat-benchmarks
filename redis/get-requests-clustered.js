@@ -23,6 +23,9 @@ function format (val){
 var numConnections = process.argv.slice(2)[0] || 100;
 var GET_DELAY = process.argv.slice(3)[0] || 1000;
 
+var PORT = 6379;
+var HOST = 'localhost';
+if( process.argv.slice(4)[0] ) { HOST = process.argv.slice(4)[0]; }
 
 var pid = process.pid;
 var connectionStart = new Date();
@@ -88,48 +91,46 @@ if (cluster.isMaster) {
     console.log('Starting up : ' + (''+numConnections).inverse + ' clients...');
     async.eachLimit(
         _.range(numConnections), // array
-        10, 
+        100, 
         function iterator(i, callback){
             // log some progress
             if(i % 1000 === 0){
                 console.log(('\t > ' + i + ' clients connected').blue);
             }
 
-            var client = redis.createClient();
-            client.on("error", function (err) {
-                console.log("Error " + err);
-            });
+            function connect(){
+                var client = redis.createClient( PORT, HOST );
 
-            client.on('connect', function (err){
-                process.send({ clientsConnected: 1 }); 
+                client.on("error", function (err) {
+                    console.log("Error " + err + ' (reconnecting...)');
+                    connect();
+                });
 
-                function makeGET(){
-                    if(!FINISHED_CONNECTING){ return false; }
+                client.on('connect', function (err){
+                    process.send({ clientsConnected: 1 }); 
 
-                    var getStart = new Date();
-                    client.set("roomid", ''+Math.random(), function(){
-                        var time = new Date() - getStart;
-                        process.send({ responseTime: time });
+                    function makeGET(){
+                        if(!FINISHED_CONNECTING){ return false; }
 
-                        getStart = new Date();
-                    });
-                }
-                //ever 4 seconds make request
-                setInterval(makeGET, GET_DELAY);
+                        var getStart = new Date();
+                        client.set("roomid", ''+Math.random(), function(){
+                            var time = new Date() - getStart;
+                            process.send({ responseTime: time });
 
-                //// finish up
-                //callback();
-                setTimeout(callback, (80 * +cluster.worker.id));
-            });
+                            getStart = new Date();
+                        });
+                    }
+                    //ever 4 seconds make request
+                    setInterval(makeGET, GET_DELAY);
+
+                    //// finish up
+                    setTimeout(callback, (80 * +cluster.worker.id));
+                });
+            }
+
+            connect();
         }, 
         function allDone (err){
-            FINISHED_CONNECTING = true;
-
-            console.log(
-                ('All ' + numConnections + ' clients connected in ').green +
-                (' '+(new Date() - connectionStart)+' ').green.inverse + 
-                ' ms'.green
-            );
         }
     );
 }
