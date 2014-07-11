@@ -12,6 +12,7 @@ var cluster = require('cluster'),
     fs = require('fs');
 
 var numCPUs = require('os').cpus().length;
+var logFilePathMgAvg = './logs/messageAvg.log';
 
 var totalClients = 0;
 var msgReceived = 0;
@@ -24,6 +25,10 @@ function format (val){
 function format2 (val){
     return val+ '';
 }
+
+fs.appendFile(logFilePathMgAvg, msgReceived+"\n", function (err) {
+  if (err) return console.log(err);
+});
 
 if (cluster.isMaster) {
     var statsId = setInterval(function () {
@@ -48,6 +53,7 @@ if (cluster.isMaster) {
 
             if (msg.msg){
                 msgReceived += 1;
+                fs.appendFile(logFilePathMgAvg, msgReceived+"\n", function (err) { if (err) return console.log(err);});
             }
         });
     }
