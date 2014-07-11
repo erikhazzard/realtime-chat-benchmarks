@@ -91,7 +91,7 @@ if (cluster.isMaster) {
     console.log('Starting up : ' + (''+numConnections).inverse + ' clients...');
     async.eachLimit(
         _.range(numConnections), // array
-        100, 
+        50, 
         function iterator(i, callback){
             // log some progress
             if(i % 1000 === 0){
@@ -102,7 +102,6 @@ if (cluster.isMaster) {
                 var client = redis.createClient( PORT, HOST );
 
                 client.on("error", function (err) {
-                    console.log("Error " + err + ' (reconnecting...)');
                     connect();
                 });
 
