@@ -10,25 +10,24 @@ require("http").globalAgent.maxSockets = Infinity;
 var WebSocketServer = require('ws').Server,
     wsServer = new WebSocketServer({port: 3000});
 var colors = require('colors');
+var logMemUsage = require('../../../util/mem-usage');
 
-var BROADCAST_INTERVAL = 500;
+// Time between when broadcast messages are sent out
+var BROADCAST_INTERVAL = 1500;
 
 console.log("\t\t\tWS Server starting".bold.blue);
 console.log("================================================================");
 
-// Stats overview
-// --------------------------------------
-function format (val){
-    return Math.round(((val / 1024 / 1024) * 1000) / 1000) + 'mb';
-}
+logMemUsage(1500);
 
-var statsId = setInterval(function () {
-    console.log('Memory Usage :: '.bold.green.inverse +
-        ("\tRSS: " + format(process.memoryUsage().rss)).blue +
-        ("\tHeap Total: " + format(process.memoryUsage().heapTotal)).yellow +
-        ("\t\tHeap Used: " + format(process.memoryUsage().heapUsed)).magenta
-    );
-}, 1500);
+wsServer.broadcast = function(data) {
+    console.log("Broadcasting " + data + " to " + numClients + " clients.");
+    for (var i in this.clients) {
+        this.clients[i].send(data);
+    }
+
+    console.log("Finished broadcasting " + data + " to " + numClients + " clients.");
+};
 
 // Websocket server
 // --------------------------------------
@@ -55,25 +54,16 @@ wsServer.on('connection', function (ws) {
         ws.close();
     });
 
-    ws.on('error', function(e) {
+    ws.on('error', function (e) {
         numErrors++;
         console.log(("Total number of errors: " + numErrors).bold.red);
         console.log(('Client #%d error: %s', thisId, e.message).bold.red);
     });
 
-    setInterval(function() {
+    setInterval(function () {
         // Routinely broadcast a message to all clients
         console.log("Broadcasting...");
         wsServer.broadcast("hello");
 
     }, BROADCAST_INTERVAL);
 });
-
-wsServer.broadcast = function(data) {
-    console.log("Broadcasting " + data + " to " + numClients + " clients.");
-    for (var i in this.clients) {
-        this.clients[i].send(data);
-    }
-
-    console.log("Finished broadcasting " + data + " to " + numClients + " clients.");
-};

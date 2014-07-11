@@ -5,28 +5,16 @@
  *
  *
  * ========================================================================= */
+var WebSocket = require('ws');
 var colors = require('colors');
 var async = require('async');
 var _ = require('lodash');
+var logMemUsage = require('../../../util/mem-usage');
 
 
-var NUM_CONNECTIONS = process.argv[2] ||  100;
+var NUM_CONNECTIONS = 30000;
 
-// Stats overview
-// --------------------------------------
-function format (val){
-    return Math.round(((val / 1024 / 1024) * 1000) / 1000) + 'mb';
-}
-
-    var statsId = setInterval(function () {
-        console.log('Memory Usage :: '.bold.green.inverse +
-            ("\tRSS: " + format(process.memoryUsage().rss)).blue +
-            ("\tHeap Total: " + format(process.memoryUsage().heapTotal)).yellow +
-            ("\t\tHeap Used: " + format(process.memoryUsage().heapUsed)).magenta
-        );
-    }, 1500);
-
-var numConnections = 0;
+logMemUsage(1500);
 
 process.on('uncaughtException', function (err) {
     console.log('xxxxxxxxxxxxxxxxxx'.bold.yellow);
@@ -37,24 +25,21 @@ process.on('uncaughtException', function (err) {
 
 // Spawn connections
 // --------------------------------------
-async.eachLimit(_.range(NUM_CONNECTIONS), NUM_CONNECTIONS / 10, function (i, cb) {
+
+async.eachLimit(_.range(NUM_CONNECTIONS), NUM_CONNECTIONS / 20, function (i, cb) {
     try {
-        var WebSocket = require('ws');
-        var ws = new WebSocket('ws://10.142.22.159:3000/', {
+        var ws = new WebSocket('ws://localhost:3000/', {
             protocolVersion: 8,
-            origin: 'http://10.142.22.159:3000'
+            origin: 'http://localhost:3000'
         });
 
-        console.log(('Connecting ('+i+')').grey);
+        console.log(('Connecting socket #' + i).grey);
 
         // Setup connections, open connection
-        ws.on('open', function () {
-            numConnections++;
-            console.log('Connected'.green.bold +
-                ' | Num connections : ' + (''+numConnections).blue);
+        ws.on('open', function setupConnection() {
 
-            // continue
-            setTimeout(function(){
+            // Wait a bit to connect the next socket
+            setTimeout(function (){
                 console.log('\t calling callback...');
                 cb();
             }, 1000);
@@ -66,13 +51,13 @@ async.eachLimit(_.range(NUM_CONNECTIONS), NUM_CONNECTIONS / 10, function (i, cb)
 
         ws.on('close', function () {
             console.log('xxxxxxxxxxxxxxxxxx'.bold.red);
-            console.log('  Disconnected'.red);
+            console.log("Client #" + i + " disconnected".red);
             console.log('xxxxxxxxxxxxxxxxxx'.bold.red);
         });
     } catch(err) {
         console.log('xxxxxxxxxxxxxxxxxx'.bold.yellow);
-        console.log('  UNCAUGHT ERROR CONNECTING TO WEBSOCKET '.yellow);
-        console.log(err+'');
+        console.log('UNCAUGHT ERROR CONNECTING TO WEBSOCKET:'.yellow);
+        console.log(err + '');
         console.log('xxxxxxxxxxxxxxxxxx'.bold.yellow);
     }
 }, function() {

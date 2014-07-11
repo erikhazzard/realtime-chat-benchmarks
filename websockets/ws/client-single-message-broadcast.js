@@ -26,6 +26,7 @@ var logger = new (winston.Logger) ({
 
 var NUM_CONNECTIONS = 20000,
     NUM_CONCURRENT = 50,
+    TEST_MSG = "test",
     sockets = [],
     numMessagesReceived = 0;
     // messages = {};
@@ -34,7 +35,7 @@ logMemUsage(1500);
 
 var numConnections = 0;
 
-process.on('uncaughtException', function (err) {
+process.on('uncaughtException', function a(err) {
     console.log('xxxxxxxxxxxxxxxxxx'.bold.yellow);
     console.log('\tUNCAUGHT EXCEPTION'.yellow);
     console.log(err);
@@ -71,8 +72,10 @@ async.eachLimit(_.range(NUM_CONNECTIONS), 2000, function (i, cb) {
             // all of the clients have received the broadcast
             // Since we're only broadcasting one message we don't actually
             // need to keep track of what the message was
+            // If you're broadcasting messages on an interval, for example, you'd
+            // probably need some kind of dictionary to store how many of each
+            // message was returned
 
-            // console.log("Client received data: " + data);
 
             numMessagesReceived++;
             if (numMessagesReceived >= NUM_CONNECTIONS) {
@@ -114,10 +117,10 @@ async.eachLimit(_.range(NUM_CONNECTIONS), 2000, function (i, cb) {
     // Callback when the async call is finished
     console.log(("Done connecting " + NUM_CONNECTIONS + " connections.").yellow);
 
-    // send a message
-    sockets[0].send("test");
-    logger.verbose("test sent at " + (new Date()).getTime(), {
-        message: "test",
+    // send a message from the first socket (arbitrary)
+    sockets[0].send(TEST_MSG);
+    logger.verbose(TEST_MSG + " sent...", {
+        message: TEST_MSG,
         time: new Date().getTime()
     });
 });
