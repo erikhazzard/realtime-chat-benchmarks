@@ -1,13 +1,9 @@
 /**
  *
- *  server-single-amqp-rooms-messages
+ *  server-single-amqp-rooms-throughput
  *
- *  Non-clustered node server responsible for broadcasting any
- *  received messages back to the client and all other clients subscribed to
- *  that room by first communicating through AMQP
- *
- *  This constructs a queue for each client and publishes messages
- *  back through the queue because it's subscribed to a room's exchange
+ *  Non-clustered node server that logs how many total messages are being
+ *  received by the client every second.
  *
  */
 
@@ -22,7 +18,7 @@ var logMemUsage = require('../../../util/mem-usage');
 
 WebSocketServer.prototype.broadcast = function(data) {
     // Broadcasts messages to all clients
-    console.log("Broadcasting " + data + " to " + numClients + " clients.");
+    // console.log("Broadcasting " + data + " to " + numClients + " clients.");
 
     for (var i in this.clients) {
         this.clients[i].send(data);
@@ -44,6 +40,14 @@ console.log("\t\t\tWS Server starting".bold.blue);
 console.log("================================================================");
 
 logMemUsage(1500);
+
+var messagesReceived = 0;
+
+setInterval(function () {
+    console.log("# messages received since: " + messagesReceived);
+
+    messagesReceived = 0;
+}, 1000);
 
 // Begin AMQP connection stuff
 var connection = amqp.createConnection({
@@ -92,6 +96,7 @@ connection.on('ready', function() {
                 // Exchange has already been set on socket so just publish something to
                 // the exchange
                 // Need to find the right exchange to publish to
+                messagesReceived++;
                 var exchange = connection.exchange('room' + roomId, {
                     type: 'fanout'
                 }, function() {
@@ -119,6 +124,9 @@ connection.on('ready', function() {
                 });
 
                 var queue = connection.queue('queue-' + socketId, function(q) {
+                    if (socketId % 100 === 0) {
+                        console.log("Queue created for socket #" + socketId);
+                    }
                     // Bind queue to exchange
                     q.bind(ex, 'key'); // key not needed bc fanout
 

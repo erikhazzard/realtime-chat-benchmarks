@@ -29,6 +29,7 @@ There are many different types of benchmarks available to be run. First run a se
 * Create clients: create and connect 20k clients
 * Room broadcast: send a message to all connected clients in the room
     * Results should be compared with RabbitMQ, ZeroMQ, etc.
+* Feed: Creates a bunch of rooms and broadcasts messages from a socket to all of the connected clients in the room. Similar to room broadcast but with less clients and switching off between rooms.
 
 
 ### Results
@@ -38,5 +39,6 @@ There are many different types of benchmarks available to be run. First run a se
 | Broadcast      | denniszhao | 20000          | 300ms           | 2.5s            |
 | Room broadcast | denniszhao | 20000          | 300ms           | 5-10ms          |
 | Room broadcast | denniszhao | 20000          | 10ms between concurrent senders | 412.16ms (average) |
+| Feed           | denniszhao | 20000          | 2s              | 568.41ms (avg)  |
 
 Note: Benchmarks could probably be improved by reducing logging and improving the code.
