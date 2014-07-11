@@ -23,6 +23,10 @@ var clientsConnected = 0;
 var GET_DELAY = process.argv.slice(3)[0] || 1000;
 var responseTimes = [];
 
+var PORT = 6379;
+var HOST = 'localhost';
+if( process.argv.slice(4)[0] ) { HOST = process.argv.slice(4)[0]; }
+
 // Launch it
 // --------------------------------------
 var pid = process.pid;
@@ -42,34 +46,40 @@ async.eachLimit(
             console.log(('\t > ' + i + ' clients connected').blue);
         }
 
-        var client = redis.createClient();
-        client.on("error", function (err) {
-            console.log("Error " + err);
-        });
+        function connect(){
+            var client = redis.createClient(PORT, HOST);
 
-        client.on('connect', function (err){
-            clientsConnected++;
+            client.on("error", function (err) {
+                console.log("Error " + err);
+                connect();
+            });
 
-            function makeGET(){
-                if(!FINISHED_CONNECTING){ return false; }
+            client.on('connect', function (err){
+                clientsConnected++;
 
-                var getStart = new Date();
-                client.set("roomid", ''+Math.random(), function(){
-                    getsRequested++;
+                function makeGET(){
+                    if(!FINISHED_CONNECTING){ return false; }
 
-                    var time = new Date() - getStart;
-                    responseTimes.push(time);
-                    if(time > longestTime){ longestTime = time; }
+                    var getStart = new Date();
+                    client.set("roomid", ''+Math.random(), function(){
+                        getsRequested++;
 
-                    getStart = new Date();
-                });
-            }
-            //ever 4 seconds make request
-            setInterval(makeGET, GET_DELAY);
+                        var time = new Date() - getStart;
+                        responseTimes.push(time);
+                        if(time > longestTime){ longestTime = time; }
 
-            // finish up
-            callback();
-        });
+                        getStart = new Date();
+                    });
+                }
+                //ever 4 seconds make request
+                setInterval(makeGET, GET_DELAY);
+
+                // finish up
+                callback();
+            });
+        }
+
+        connect();
     }, 
     function allDone (err){
         console.log(
