@@ -103,7 +103,7 @@ and sends after the initialization phase one message to each memeber of the room
 ## Results
 ### How long does it takes to connect clients?
 
-Running```$node client-profiling.js NR_OF_CLIENTS NR_OF_ITERATIONS```
+Running the script: ```$node client-profiling.js NR_OF_CLIENTS NR_OF_ITERATIONS```
 
 | Type    | Test           | Machine    | Number Clients  | Time in seconds | Protocol| Broker  | Env   |
 |---------|----------------|------------|----------------:|----------------:|---------|---------|-------|
@@ -121,9 +121,9 @@ Running```$node client-profiling.js NR_OF_CLIENTS NR_OF_ITERATIONS```
 | Clust       | Send Msg         | roundrobin   | 1 per room   | 5000       | 2            | 1.841 s   | 69.71  s   | 8.21 %   | 10000 |  
 | Clust       | Send Msg         | roundrobin   | 1 per room   | 10.000     | 2            | 2.680 s   | 136.35 s   | 9.72 %   | 20000 |  
 | Normal      | Send Msg         | roundrobin   | 1 per room   | 30.000     | 2            | 8.277 s   | 403.04 s   |          |       |  
-| Clust       | Send Msg         | roundrobin   | 1 per room   | 30.000     | 2            | 8.277 s   | 403.04 s   |          |       |  
 | Clust       | Send Msg         | roundrobin   | 1 per room   | 30.000     | 2            | 4.131 s   | 403.01 s   |          | 60000 |  
 | Clust       | Send Msg         | roundrobin   | 1 per room   | 30.000     | 3            | 19.07 s   | 126.42 s   |          | 90000 |  
+| Clust       | Send Msg         | roundrobin   | 1 per room   | 30.000     | 4            | 3.675 s   | 603.05 s   |          | 120000 |  
 | Clust       | Send Msg         | roundrobin   | 6 per room   | 100        | 100          | 2.690 s   | 207.06 s   | 10.35 %  | 59200 |  
 
 
