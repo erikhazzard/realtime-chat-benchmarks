@@ -77,6 +77,7 @@ and sends after the initialization phase one message to each memeber of the room
     * Mac Book Pro 13"
     * 2.GHz Intel Core i7
     * 16GB 1333MHz DDR
+    * Node.js v0.10.26
 
   * Machine: denniszhao
     * Macbook Air 13"
@@ -98,15 +99,14 @@ and sends after the initialization phase one message to each memeber of the room
 | Normal  | Create Clients | roundrobin |         30.000  | 131.789s        | MQTT    |
 
 
-### How long does it takes to send 1 message to x clients? (x rooms a 6 people)
-| Type      | Test           | Machine    | Senders    | Clients  | Iterations | Avg Time | Total    |
-|-----------|----------------|------------|------------|---------:|-----------:| --------:|---------:|
-| Clustered | Send Message   | roundrobin | 1 per room |     5000 | 2          | 2.141 s  | 69.72 s  |
-| Clustered | Send Message   | roundrobin | 1 per room |   10.000 | 2          | 2.287 s  | 136.36 s |
-| Normal    | Send Message   | roundrobin | 1 per room |   30.000 | 2          | 8.277 s  | 403.04 s |
-| Clustered | Send Message   | roundrobin | 1 per room |   30.000 | 2          | 8.277 s  | 403.04 s |
-
-136.361 s
+### How long does it takes to send 1 message to x clients? (x rooms a 6 people) 
+| Type      | Test           | Machine    | Senders    | Clients  | Iterations | Avg Time | Total    | CPU Avg| #Msg| 
+|-----------|----------------|------------|------------|---------:|-----------:| --------:|---------:|-------:|----:|
+| Clustered | Send Message   | roundrobin | 1 per room |     5000 | 2          | 2.141 s  | 69.72 s  |        ||
+| Clustered | Send Message   | roundrobin | 1 per room |   10.000 | 2          | 2.287 s  | 136.36 s |        ||
+| Normal    | Send Message   | roundrobin | 1 per room |   30.000 | 2          | 8.277 s  | 403.04 s |        ||
+| Clustered | Send Message   | roundrobin | 1 per room |   30.000 | 2          | 8.277 s  | 403.04 s |        ||
+| Clustered | Send Message   | roundrobin | 6 per room |      100 | 100        | 2.690 s  | 207.06 s |10.35 % |59200|
 
 
 
