@@ -17,9 +17,12 @@ module.exports.calcAvg = function(logfile, column,callback){
     }).on('line', function(line) {
         // For each line add it to an array
         var strings = line.toString().split(/\s+/).filter(Boolean);
-        if (Number(strings[column])) {
+        
+        var num = parseFloat(strings[column].replace(',', '.'));
+
+        if (Number(num)) {
             // Add to array
-            values.push(Number(strings[column]));
+            values.push(Number(num));
         } else {
             return;
         }
@@ -30,8 +33,7 @@ module.exports.calcAvg = function(logfile, column,callback){
             sum += values[i];
         }
 
-        console.log("Average time (ms): " + (sum / values.length));
-        callback();
+        callback(sum / values.length);
     });
 
 
