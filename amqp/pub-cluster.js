@@ -9,12 +9,16 @@ var amqp = require('amqp');
 var cluster = require('cluster');
 var numCPUs = require('os').cpus().length;
 
+var host =  process.argv[2] || 'localhost';
+
+console.log("Host to connect to:", host);
+
 if (cluster.isMaster) {
     for (var i = 0; i < numCPUs; i++) {
         cluster.fork();
     }
 } else {
-    var connection = amqp.createConnection({ host: 'localhost' });
+    var connection = amqp.createConnection({ host: host });
     connection.on('error', function(err) {
         if((err+'').match('socket is closed')){
             console.log('Could not connect to AMQP (rabbitmq-server is not running)');
