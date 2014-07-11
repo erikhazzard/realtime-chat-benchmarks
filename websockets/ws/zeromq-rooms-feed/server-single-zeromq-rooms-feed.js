@@ -1,12 +1,15 @@
 /**
  *
- *  server-single-amqp-client-queue-broadcast-back
+ *  server-single-amqp-rooms-feed
  *
  *  Non-clustered node server responsible for broadcasting any
- *  received messages back to the client by first communicating
- *  through AMQP
+ *  received messages back to the client and all other clients subscribed to
+ *  that room by first communicating through ZeroMQ
+ *
  *  This constructs a queue for each client and publishes messages
  *  back through the queue because it's subscribed to a room's exchange
+ *
+ *  File is identical to ../amqp-rooms-messages/server-single-zeromq-rooms-messages
  *
  */
 
@@ -15,18 +18,19 @@ var colors = require('colors');
 var winston = require('winston');
 var async = require('async');
 var _ = require('lodash');
-var amqp = require('amqp');
 var WebSocketServer = require('ws').Server;
+var logMemUsage = require('../../../util/mem-usage');
+var zmq = require('zmq');
 
 WebSocketServer.prototype.broadcast = function(data) {
     // Broadcasts messages to all clients
-    console.log("Broadcasting " + data + " to " + numClients + " clients.");
+    // console.log("Broadcasting " + data + " to " + numClients + " clients.");
 
     for (var i in this.clients) {
         this.clients[i].send(data);
     }
 
-    console.log("Finished broadcasting " + data + " to " + numClients + " clients.");
+    // console.log("Finished broadcasting " + data + " to " + numClients + " clients.");
 };
 
 var logger = new (winston.Logger) ({
@@ -41,19 +45,17 @@ var logger = new (winston.Logger) ({
 console.log("\t\t\tWS Server starting".bold.blue);
 console.log("================================================================");
 
-// Stats overview
-// --------------------------------------
-function format (val){
-    return Math.round(((val / 1024 / 1024) * 1000) / 1000) + 'mb';
-}
+logMemUsage(1500);
 
-var statsId = setInterval(function () {
-    console.log('Memory Usage :: '.bold.green.inverse +
-        ("\tRSS: " + format(process.memoryUsage().rss)).blue +
-        ("\tHeap Total: " + format(process.memoryUsage().heapTotal)).yellow +
-        ("\t\tHeap Used: " + format(process.memoryUsage().heapUsed)).magenta
-    );
-}, 1500);
+var zmqUri = 'tcp://127.0.0.1:12345';
+
+var messagesReceived = 0;
+
+setInterval(function () {
+    console.log("# messages received in the last second: " + messagesReceived);
+
+    messagesReceived = 0;
+}, 1000);
 
 // Begin AMQP connection stuff
 var connection = amqp.createConnection({
@@ -62,8 +64,7 @@ var connection = amqp.createConnection({
 
 // Set up AMQP connection
 connection.on('ready', function() {
-    // When an AMQP connection has been established, start the
-    // WebSocket server
+    // When an AMQP connection has been established, start the WebSocket server
 
     var wsServer = new WebSocketServer({ port: 3000 });
 
@@ -82,58 +83,58 @@ connection.on('ready', function() {
         }
 
         ws.on('message', function (message) {
-            console.log("Received data from client: " + message);
+            // console.log("Received data from client: " + message);
 
             var data = JSON.parse(message),
                 roomId = data.roomId,
                 socketId = data.socketId,
+                time = data.time,
                 content = data.message;
             if (content) {
-                // This is a proper message that needs to be broadcast back to all
-                // clients in the same room
-                logger.verbose("Broadcasting message: " + message + " at " + (new Date()).getTime(), {
+                // This is a proper message that needs to be broadcast back to
+                // all clients in the same room
+                /*
+                logger.verbose("Broadcasting message: " + message + " at " +
+                    (new Date()).getTime(), {
                     message: message,
                     time: new Date().getTime()
                 });
+                */
 
-                // Exchange has already been set on socket so just publish something to
-                // the exchange
+                // Exchange has already been set on socket so just publish
+                // something to the exchange
                 // Need to find the right exchange to publish to
+                messagesReceived++;
+
                 var exchange = connection.exchange('room' + roomId, {
                     type: 'fanout'
                 }, function() {
                     console.log("Got exchange #" + roomId);
 
                     // Somehow optimize to not send back to orig publisher?
-                    // Send a message to the room's exchange so that the appropriate queues
-                    // are notified
+                    // Send a message to the room's exchange so that the
+                    // appropriate queues are notified
                     exchange.publish('key', {
                         roomId: roomId,
-                        content: content
+                        content: content,
+                        time: time,
                     }, {
                         contentType: 'application/json'
                     });
                 });
             } else {
                 // Initial response from client, just the room and socket information
-                // Here we create an exchange for the room and queue for the socket
-                // and AMQP Exchange
-                var ex = connection.exchange('room' + roomId, {
-                    type: 'fanout'
-                }, function() {
-                    console.log("room" + roomId + " exchange set to socket " + socketId);
-                });
+                // Here we create a ZMQ socket
+                var socket = zmq.socket('sub');
 
-                var queue = connection.queue('queue-' + socketId, function(q) {
-                    // Bind queue to exchange
-                    q.bind(ex, 'key'); // key not needed bc fanout
+                socket.identity = 'sub_room' + socketId;
 
-                    q.subscribe(function(data) {
-                        // When a message is received in the queue, send that back
-                        // to the appropriate web socket
-                        console.log("Message received on queue " + q.name + ": " + data);
-                        ws.send(JSON.stringify(data));
-                    });
+                socket.connect(zmqUri);
+
+                socket.subscribe('room' + roomId);
+
+                socket.on('message', function(data) {
+                    console.log(socket.identity + ": received data " + data.toString());
                 });
             }
         });

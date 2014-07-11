@@ -27,7 +27,6 @@ var DELAY_BETWEEN_CONCURRENT_SENDERS = 20;
 var sys = require('sys');
 var exec = require('child_process').exec;
 
-
 var msgNr = 0;
 var roomId = 0;
 
@@ -45,9 +44,14 @@ var broadcastClients = [];
 var index = 0;
 
 // Reset Logging Files
-fs.writeFile(logFilePath, "", function (err) { if (err) return console.log(err);});
-fs.writeFile(logFilePathMgAvg, "", function (err) { if (err) return console.log(err);});
-fs.writeFile(logFilePathCpuAvg, "", function (err) { if (err) return console.log(err);});
+fs.writeFile(logFilePath, "", function (err) {
+  if (err) return console.log(err);
+  
+});
+
+fs.writeFile(logFilePathMgAvg, "", function (err) {
+  if (err) return console.log(err);
+});
 
 winston.info("Number of clients to create: ", NUM_CLIENTS);
 winston.info("Number of iterations: ", NUM_ITERATIONS);
@@ -78,9 +82,10 @@ async.each(_.range(NUM_CLIENTS), function(i, callback) {
     if(index === 0){
         roomId++;
         //winston.info("New room, name: ", roomId);
-        broadcastClients.push(client);
+        
     }
 
+    broadcastClients.push(client);
 
     client.roomId = roomId+'';
     client.clientId = i;
@@ -104,7 +109,7 @@ async.each(_.range(NUM_CLIENTS), function(i, callback) {
     //process.exit(1);
     var end = new Date() - start;
     winston.info("Time to create clients : %ds", end / 1000);
-
+    console.log("Nr of senders: ", broadcastClients.length);
 
     var startIntervals = new Date();
 
@@ -139,8 +144,10 @@ async.each(_.range(NUM_CLIENTS), function(i, callback) {
                                     setTimeout(function(d, i){
                                         
                                         console.log("Finished. Time to run all iterations", (new Date() - startIntervals)/1000, "s"); 
+                                        
                                         var column = 2;
-                                        helpers.calcAvg( logFilePath, column, function(val){
+                                        helpers.calcAvg(logFilePath, column, function(val){
+
                                             console.log("Average MsgTime time (ms): " + val);
 
                                             helpers.calcAvg(logFilePathCpuAvg, 0, function(val){
@@ -148,11 +155,7 @@ async.each(_.range(NUM_CLIENTS), function(i, callback) {
                                                 console.log("Message Send Total: ", msgNr);
                                                 process.exit(0);    
                                             });
-
-                                            
-                                       });
-
-                                        
+                                        });
                                         
 
                                     }, 1000);
