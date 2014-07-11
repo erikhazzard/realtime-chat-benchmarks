@@ -1,11 +1,9 @@
 /* =========================================================================
  *
- *  client-single-rooms-messages
+ *  client-single-rooms-feed
  *
- *  establishes NUM_CONNECTIONS connections using a single
- *  node process (?) and splits up WebSockets into rooms with a max of
- *  6 connections per room
- *
+ *  Constructs a set number of rooms and assigns a bunch of sockets to those
+ *  rooms
  *
  * ========================================================================= */
 var colors = require('colors');
@@ -14,39 +12,26 @@ var _ = require('lodash');
 var winston = require('winston');
 var WebSocket = require('ws');
 var colors = require('colors');
+var fs = require('fs');
+var logMemUsage = require('../../../util/mem-usage');
+
+    // Total # connections
+var NUM_CONNECTIONS = 20000,
+    NUM_ROOMS = 10,
+    LOG_FILE_PATH = 'logs/amqp-rooms-feed.log',
+    sockets = [],
+    messages = {};
 
 var logger = new (winston.Logger) ({
     transports: [
         new (winston.transports.File) ({
-            filename: 'logs/client-room-queue-amqp-broadcast-back.log',
+            filename: LOG_FILE_PATH,
             level: 'verbose'
         })
     ]
 });
 
-    // Total # connections
-var NUM_CONNECTIONS = 20000,
-    // number of messages to send
-    NUM_MESSAGES = 3000,
-    NUM_CONCURRENT = 50,
-    sockets = [],
-    messages = {};
-
-// Stats overview
-// --------------------------------------
-function format (val){
-    return Math.round(((val / 1024 / 1024) * 1000) / 1000) + 'mb';
-}
-
-var statsId = setInterval(function () {
-    console.log('Memory Usage :: '.bold.green.inverse +
-        ("\tRSS: " + format(process.memoryUsage().rss)).blue +
-        ("\tHeap Total: " + format(process.memoryUsage().heapTotal)).yellow +
-        ("\t\tHeap Used: " + format(process.memoryUsage().heapUsed)).magenta
-    );
-}, 1500);
-
-var numConnections = 0;
+logMemUsage(1500);
 
 process.on('uncaughtException', function (err) {
     console.log('xxxxxxxxxxxxxxxxxx'.bold.yellow);
@@ -55,13 +40,18 @@ process.on('uncaughtException', function (err) {
     console.log('xxxxxxxxxxxxxxxxxx'.bold.yellow);
 });
 
+// Prepare log file
+fs.writeFile(LOG_FILE_PATH, "ROOM_ID\tTIME_DIFF\n", function (err) {
+  if (err) return console.log(err);
+});
+
 // Spawn connections
 // --------------------------------------
 async.eachLimit(_.range(NUM_CONNECTIONS), 2000, function (i, cb) {
     try {
         // Just use floor(i / 6) as room ID for now; ensures
         // at most 6 in a room
-        var roomId = Math.floor(i / 6),
+        var roomId = i % NUM_ROOMS;
             roomUri = 'ws://localhost:3000/' + roomId;
         var ws = sockets[i] = new WebSocket(roomUri, {
             protocolVersion: 8,
@@ -79,25 +69,38 @@ async.eachLimit(_.range(NUM_CONNECTIONS), 2000, function (i, cb) {
                 socketId: i
             }));
 
-            numConnections++;
             console.log('Connected'.green.bold +
-                ' | Num connections : ' + (''+numConnections).blue);
+                ' | Num connections : ' + (''+ sockets.length).blue);
 
             // continue
-            setTimeout(function(){
+            setTimeout(function (){
                 console.log('\t calling callback...');
                 cb();
-            }, 300);
+            }, 700);
         });
 
         ws.on('message', function(data, flags) {
             // When a message is received, nothing happens
             // irl the client should update its view or somethin
-            var parsed = JSON.parse(data);
-            logger.verbose("Message received from server from room " + parsed.roomId, {
-                room: parsed.roomId,
-                time: new Date().getTime()
-            });
+            var parsed = JSON.parse(data),
+                roomId = parsed.roomId,
+                content = parsed.content,
+                time = parsed.time,
+                timeDiff = new Date().getTime() - time;
+
+            if (messages[roomId]) {
+                messages[roomId]++;
+
+                if (messages[roomId] >= NUM_CONNECTIONS / NUM_ROOMS) {
+                    fs.appendFile(LOG_FILE_PATH, roomId + "\t" + timeDiff + "\n",
+                        function (err) {
+                            if (err) return console.log(err);
+                        });
+                }
+            } else {
+                messages[roomId] = 1;
+            }
+
             console.log("Message received from server: " + data);
         });
 
@@ -118,27 +121,18 @@ async.eachLimit(_.range(NUM_CONNECTIONS), 2000, function (i, cb) {
     console.log(("Done connecting " + NUM_CONNECTIONS + " connections.").yellow);
 
     var roomId = 0,
-        socketId = 10;
+        socketId = 0;
 
-    for (var i = 0; i < 10; i++) {
-        setTimeout(function() {
-            setInterval(function() {
-                // Send a message with a room ID
-                var time = new Date().getTime();
-                sockets[socketId].send(JSON.stringify({
-                    roomId: roomId,
-                    time: time,
-                    message: 'hello world'
-                }));
+    // send a bunch of messages every second
+    setInterval(function() {
+        sockets[socketId].send(JSON.stringify({
+            roomId: roomId,
+            time: new Date().getTime(),
+            socketId: socketId,
+            message: 'hello world'
+        }));
 
-                logger.verbose("Message sent from room " + roomId, {
-                    room: roomId,
-                    time: time
-                });
-
-                socketId = (socketId + 1) % sockets.length;
-                roomId = (roomId + 1) % Math.floor(sockets.length / 6);
-            }, 300);
-        }, 177 * i);
-    }
+        socketId = (socketId + 1) % sockets.length;
+        roomId = (roomId + 1) % NUM_ROOMS;
+    }, 2000);
 });

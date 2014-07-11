@@ -15,6 +15,24 @@ var winston = require('winston');
 var WebSocket = require('ws');
 var colors = require('colors');
 var logMemUsage = require('../../util/mem-usage');
+
+var NUM_CONNECTIONS = process.argv[2] || 2000,
+    MAX_ITERATIONS = process.argv[3] || 10,
+    NUM_CONCURRENT_SENDERS = 300,
+    DELAY_BETWEEN_CONCURRENT_SENDERS = 20,
+    NUM_PEOPLE_IN_ROOM = 6,
+    MAX_NUM_MESSAGES = 100000,
+    LOG_FILE_PATH = 'logs/amqp-rooms-messasges.log',
+    sockets = [],
+    messages = {};
+
+var NUM_CONNECTIONS = 20000,
+    MAX_ITERATIONS = process.argv[3] || 10,
+    NUM_CONCURRENT = 50,
+    sockets = [],
+    numMessagesReceived = 0;
+    // messages = {};
+
 var logger = new (winston.Logger) ({
     transports: [
         new (winston.transports.File) ({
@@ -23,12 +41,6 @@ var logger = new (winston.Logger) ({
         })
     ]
 });
-
-var NUM_CONNECTIONS = 20000,
-    NUM_CONCURRENT = 50,
-    sockets = [],
-    numMessagesReceived = 0;
-    // messages = {};
 
 logMemUsage(1500);
 
@@ -114,10 +126,59 @@ async.eachLimit(_.range(NUM_CONNECTIONS), 2000, function (i, cb) {
     // Callback when the async call is finished
     console.log(("Done connecting " + NUM_CONNECTIONS + " connections.").yellow);
 
-    // send a message
-    sockets[0].send("test");
-    logger.verbose("test sent at " + (new Date()).getTime(), {
-        message: "test",
-        time: new Date().getTime()
-    });
+    var roomId = 0,
+        socketId = 0,
+        numMessagesSent = 0,
+        TIME_TO_WAIT_MSG_SENDING = 500;
+
+    var sendMessage = function() {
+        // Send a message with a room ID
+
+        // Send the current time to the socket to compute the time it
+        // takes for the message to go to all clients in the room
+        sockets[socketId].send(JSON.stringify({
+            roomId: roomId,
+            time: new Date().getTime(),
+            message: 'hello world'
+        }));
+
+        socketId = (socketId + NUM_PEOPLE_IN_ROOM) % sockets.length;
+        roomId = (roomId + 1) % Math.floor(sockets.length / NUM_PEOPLE_IN_ROOM);
+    };
+
+    setTimeout(function(){
+        // NUM_CONCURRENT_SENDERS = broadcastClients.length;
+        var client_iterations = [];
+        var intervalIds = [];
+
+        for (var i = 0; i < NUM_CONCURRENT_SENDERS; i++) {
+            client_iterations.push(0);
+            setTimeout(function (index){
+                return function (){
+                    var timerId = setInterval(function (index_inner){
+                            return function () {
+                                if (client_iterations[index_inner] < MAX_ITERATIONS) {
+                                    console.log("Message", index_inner);
+                                    //console.log("Index", index_inner)
+                                    sendMessage();
+                                    // var client = broadcastClients[index_inner];
+                                    //client.publish(client.roomId, "Hello World");
+                                    client_iterations[index_inner] += 1;
+                                } else {
+                                  console.log("Cleared Interval")
+                                  clearInterval(intervalIds[index_inner]);
+                                  if (index_inner == MAX_ITERATIONS) {
+                                    setTimeout(function(d, i){
+                                        console.log("Finished");
+                                        process.exit(0);
+                                    }, 1000);
+                                  }
+                                }
+                            }
+                    }(index), DELAY_BETWEEN_CONCURRENT_SENDERS * NUM_CONCURRENT_SENDERS);
+                    intervalIds.push(timerId);
+                };
+            }(i), DELAY_BETWEEN_CONCURRENT_SENDERS * i);
+        }
+    }, TIME_TO_WAIT_MSG_SENDING);
 });
