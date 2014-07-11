@@ -37,6 +37,7 @@ var MAX_NR_PEOPLE_IN_ROOM = 6;
 
 var logFilePath = './logs/logs.log';
 var logFilePathMgAvg = './logs/messageAvg.log';
+var logFilePathCpuAvg = './logs/cpuAvg.log';
 
 var start = new Date();
 var broadcastClients = [];
@@ -44,14 +45,9 @@ var broadcastClients = [];
 var index = 0;
 
 // Reset Logging Files
-fs.writeFile(logFilePath, "", function (err) {
-  if (err) return console.log(err);
-  
-});
-
-fs.writeFile(logFilePathMgAvg, "", function (err) {
-  if (err) return console.log(err);
-});
+fs.writeFile(logFilePath, "", function (err) { if (err) return console.log(err);});
+fs.writeFile(logFilePathMgAvg, "", function (err) { if (err) return console.log(err);});
+fs.writeFile(logFilePathCpuAvg, "", function (err) { if (err) return console.log(err);});
 
 winston.info("Number of clients to create: ", NUM_CLIENTS);
 winston.info("Number of iterations: ", NUM_ITERATIONS);
