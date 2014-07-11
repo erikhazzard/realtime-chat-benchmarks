@@ -79,7 +79,7 @@ and sends after the initialization phase one message to each memeber of the room
     * 2.GHz Intel Core i7
     * 16GB 1333MHz DDR
     * Node.js v0.10.26
-    * Ulimits: 
+    * Ulimits:
       * -t: cpu time (seconds)              unlimited
       * -f: file size (blocks)              unlimited
       * -d: data seg size (kbytes)          unlimited
@@ -89,7 +89,7 @@ and sends after the initialization phase one message to each memeber of the room
       * -l: locked-in-memory size (kbytes)  unlimited
       * -u: processes                       709
       * -n: file descriptors                999999
-      
+
 
 
   * Machine: denniszhao
@@ -103,7 +103,7 @@ and sends after the initialization phase one message to each memeber of the room
 ## Results
 ### How long does it takes to connect clients?
 
-Running the script: ```$node client-profiling.js NR_OF_CLIENTS NR_OF_ITERATIONS```
+Running the script: ```$node client-profiling.js NR_OF_CLIENTS NR_OF_ITERATIONS MQTT_URI```
 
 | Type    | Test           | Machine    | Number Clients  | Time in seconds | Protocol| Broker  | Env   |
 |---------|----------------|------------|----------------:|----------------:|---------|---------|-------|
@@ -113,18 +113,22 @@ Running the script: ```$node client-profiling.js NR_OF_CLIENTS NR_OF_ITERATIONS`
 | Normal  | Create Clients | roundrobin |         20.000  | 75.268s         | MQTT    | RabbitMQ| Local |
 | Normal  | Create Clients | denniszhao |         20.000  | 111.161s        | MQTT    | RabbitMQ| Netw  |
 | Normal  | Create Clients | roundrobin |         30.000  | 131.789s        | MQTT    | RabbitMQ| Local |
+| Normal  | Create Clients | t2.micro   |         10.000  | 4.828s          | MQTT    | RabbitMQ| Net   |
+| Normal  | Create Clients | t2.micro   |         20.000  | 34.26s          | MQTT    | RabbitMQ| Net   |
 
 
-### How long does it takes to send 1 message to x clients? (x rooms a 6 people) 
-| Type        | Test             | Machine      | Senders      | Clients    | Iterat.      | Avg Time  | Total      | CPU Avg  | #Msg  |  
-| ----------- | ---------------- | ------------ | ------------ | ---------: | -----------: | --------: | ---------: | -------: | ----: |  
-| Clust       | Send Msg         | roundrobin   | 1 per room   | 5000       | 2            | 1.841 s   | 69.71  s   | 8.21 %   | 10000 |  
-| Clust       | Send Msg         | roundrobin   | 1 per room   | 10.000     | 2            | 2.680 s   | 136.35 s   | 9.72 %   | 20000 |  
-| Normal      | Send Msg         | roundrobin   | 1 per room   | 30.000     | 2            | 8.277 s   | 403.04 s   |          |       |  
-| Clust       | Send Msg         | roundrobin   | 1 per room   | 30.000     | 2            | 4.131 s   | 403.01 s   |          | 60000 |  
-| Clust       | Send Msg         | roundrobin   | 1 per room   | 30.000     | 3            | 19.07 s   | 126.42 s   |          | 90000 |  
-| Clust       | Send Msg         | roundrobin   | 1 per room   | 30.000     | 4            | 3.675 s   | 603.05 s   |          | 120000 |  
-| Clust       | Send Msg         | roundrobin   | 6 per room   | 100        | 100          | 2.690 s   | 207.06 s   | 10.35 %  | 59200 |  
+### How long does it takes to send 1 message to x clients? (x rooms a 6 people)
+| Type        | Test             | Machine      | Senders      | Clients    | Iterat.      | Avg Time  | Total      | CPU Avg  | #Msg  |
+| ----------- | ---------------- | ------------ | ------------ | ---------: | -----------: | --------: | ---------: | -------: | ----: |
+| Clust       | Send Msg         | roundrobin   | 1 per room   | 5000       | 2            | 1.841 s   | 69.71  s   | 8.21 %   | 10000 |
+| Clust       | Send Msg         | roundrobin   | 1 per room   | 10.000     | 2            | 2.680 s   | 136.35 s   | 9.72 %   | 20000 |
+| Normal      | Send Msg         | roundrobin   | 1 per room   | 30.000     | 2            | 8.277 s   | 403.04 s   |          |       |
+| Clust       | Send Msg         | roundrobin   | 1 per room   | 30.000     | 2            | 4.131 s   | 403.01 s   |          | 60000 |
+| Clust       | Send Msg         | roundrobin   | 1 per room   | 30.000     | 3            | 19.07 s   | 126.42 s   |          | 90000 |
+| Clust       | Send Msg         | roundrobin   | 1 per room   | 30.000     | 4            | 3.675 s   | 603.05 s   |          | 120000 |
+| Clust       | Send Msg         | roundrobin   | 6 per room   | 100        | 100          | 2.690 s   | 207.06 s   | 10.35 %  | 59200 |
+| Normal      | Send Msg         | t2.micro     | 1 per room   | 10.000     | 2            | 5.25 ms   | 136.351 s  |          | 86672 |
+| Normal      | Send Msg         | t2.micro     | 1 per room   | 20.000     | 2            | 107.9 ms  | 269.72 s   |          | 92941 |
 
 
 
