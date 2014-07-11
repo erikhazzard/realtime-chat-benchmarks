@@ -102,11 +102,11 @@ and sends after the initialization phase one message to each memeber of the room
 ### How long does it takes to send 1 message to x clients? (x rooms a 6 people) 
 | Type      | Test           | Machine    | Senders    | Clients  | Iterations | Avg Time | Total    | CPU Avg| #Msg| 
 |-----------|----------------|------------|------------|---------:|-----------:| --------:|---------:|-------:|----:|
-| Clustered | Send Message   | roundrobin | 1 per room |     5000 | 2          | 2.141 s  | 69.72 s  |        ||
-| Clustered | Send Message   | roundrobin | 1 per room |   10.000 | 2          | 2.287 s  | 136.36 s |        ||
+| Clust | Send Message   | roundrobin | 1 per room |     5000 | 2          | 2.141 s  | 69.72 s  |        ||
+| Clust | Send Message   | roundrobin | 1 per room |   10.000 | 2          | 2.287 s  | 136.36 s |        ||
 | Normal    | Send Message   | roundrobin | 1 per room |   30.000 | 2          | 8.277 s  | 403.04 s |        ||
-| Clustered | Send Message   | roundrobin | 1 per room |   30.000 | 2          | 8.277 s  | 403.04 s |        ||
-| Clustered | Send Message   | roundrobin | 6 per room |      100 | 100        | 2.690 s  | 207.06 s |10.35 % |59200|
+| Clust | Send Message   | roundrobin | 1 per room |   30.000 | 2          | 8.277 s  | 403.04 s |        ||
+| Clust | Send Message   | roundrobin | 6 per room |      100 | 100        | 2.690 s  | 207.06 s |10.35 % |59200|
 
 
 
