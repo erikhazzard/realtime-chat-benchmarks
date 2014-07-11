@@ -6,7 +6,11 @@
  * ========================================================================= */
 var colors = require('colors');
 var amqp = require('amqp');
-var connection = amqp.createConnection({ host: 'localhost' });
+var host =  process.argv[2] || 'localhost';
+
+console.log("Host to connect to:", host);
+
+var connection = amqp.createConnection({ host: host });
 
 connection.on('error', function(err) {
     if((err+'').match('socket is closed')){
