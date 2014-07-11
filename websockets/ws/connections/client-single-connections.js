@@ -10,7 +10,7 @@ var async = require('async');
 var _ = require('lodash');
 
 
-var NUM_CONNECTIONS = 32500;
+var NUM_CONNECTIONS = process.argv[2] ||  100;
 
 // Stats overview
 // --------------------------------------
@@ -37,12 +37,12 @@ process.on('uncaughtException', function (err) {
 
 // Spawn connections
 // --------------------------------------
-async.eachLimit(_.range(NUM_CONNECTIONS), 2000, function (i, cb) {
+async.eachLimit(_.range(NUM_CONNECTIONS), NUM_CONNECTIONS / 10, function (i, cb) {
     try {
         var WebSocket = require('ws');
-        var ws = new WebSocket('ws://localhost:3000/', {
+        var ws = new WebSocket('ws://10.142.22.159:3000/', {
             protocolVersion: 8,
-            origin: 'http://localhost:3000'
+            origin: 'http://10.142.22.159:3000'
         });
 
         console.log(('Connecting ('+i+')').grey);
