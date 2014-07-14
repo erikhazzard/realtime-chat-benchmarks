@@ -132,6 +132,7 @@ Running the script: ```$node client-profiling.js NR_OF_CLIENTS NR_OF_ITERATIONS 
 
 
 
+
 ### People of Interest:
   * Andy Piper
 
@@ -162,7 +163,7 @@ Running the script: ```$node client-profiling.js NR_OF_CLIENTS NR_OF_ITERATIONS 
 
 #### Load balance MQTT
 * http://www.hivemq.com/building-a-high-availability-mqtt-cluster/
-
+* http://de.slideshare.net/matteocollina/building-a-multi-protocol-broker-for-the-internet-of-things-using-nodejs
 
 #### Mqtt Scaling
 * https://www.youtube.com/watch?v=WFfciQ1U_lU
@@ -174,6 +175,9 @@ Running the script: ```$node client-profiling.js NR_OF_CLIENTS NR_OF_ITERATIONS 
   * HiveMQ (http://www.hivemq.com/)
 
 ### Topics
+
+A list of topics and products/services to further explore
+
 * STOMP
 * EventSource iOS?
 * Websockets
