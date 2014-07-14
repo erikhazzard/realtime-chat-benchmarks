@@ -7,6 +7,7 @@
 var express = require('express');
 var winston = require('winston');
 var expressWinston = require('express-winston');
+var compression = require('compression');
 
 console.log('Server starting...');
 
@@ -18,15 +19,17 @@ app.set('showStackError', true);
 app.locals.pretty = true;
 
 //// CORs support
-//app.use(function(req, res, next){
-    //// Enable CORs support
-    //res.header('Access-Control-Allow-Origin', '*');
-    //res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
-    //res.header('Access-Control-Allow-Headers', 'Content-Type');
-    //// use utf8 encoding
-    //res.charset = 'utf-8';
-    //next();
-//});
+app.use(compression());
+app.use(function(req, res, next){
+    // Enable CORs support
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
+    res.header('Access-Control-Allow-Headers', 'Content-Type');
+    // use utf8 encoding
+    res.charset = 'utf-8';
+    next();
+});
+
 
 // Log requests
 var routeLogTransports = 
@@ -65,9 +68,10 @@ app.get('/eventsource', function routeEventsource(req, res, next){
 
     var sendMessages = setInterval(function(){
         color = '#336699';
+        console.log('sent');
         res.write('id: 1 \n');
         res.write('data: {"bg":"#' + color + '"}\n\n');
-    }, 10);
+    }, 100);
 
     // If the client disconnects, let's not leak any resources
     res.on('close', function() {
