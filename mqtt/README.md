@@ -125,7 +125,7 @@ Running the script: ```$node client-profiling.js NR_OF_CLIENTS NR_OF_ITERATIONS`
 | Clust       | Send Msg         | roundrobin   | 1 per room   | 30.000     | 3            | 19.07 s   | 126.42 s   |          | 90000 |  
 | Clust       | Send Msg         | roundrobin   | 1 per room   | 30.000     | 4            | 3.675 s   | 603.05 s   |          | 120000 |  
 | Clust       | Send Msg         | roundrobin   | 6 per room   | 100        | 100          | 2.690 s   | 207.06 s   | 10.35 %  | 59200 |  
-| Normal      | Send Msg         | roundrobin   | 6 per room   | 1000       | 100          | 2.690 s   | 207.06 s   | 10.35 %  | 59200 |  
+| Normal      | Send Msg         | roundrobin   | 6 per room   | 1000       | 2            | 2.690 s   | 207.06 s   | 10.35 %  | 59200 |  
 
 
 
@@ -159,7 +159,7 @@ Running the script: ```$node client-profiling.js NR_OF_CLIENTS NR_OF_ITERATIONS`
 
 #### Load balance MQTT
 * http://www.hivemq.com/building-a-high-availability-mqtt-cluster/
-
+* http://de.slideshare.net/matteocollina/building-a-multi-protocol-broker-for-the-internet-of-things-using-nodejs
 
 #### Mqtt Scaling
 * https://www.youtube.com/watch?v=WFfciQ1U_lU
@@ -171,6 +171,9 @@ Running the script: ```$node client-profiling.js NR_OF_CLIENTS NR_OF_ITERATIONS`
   * HiveMQ (http://www.hivemq.com/)
 
 ### Topics
+
+A list of topics and products/services to further explore
+
 * STOMP
 * EventSource iOS?
 * Websockets
