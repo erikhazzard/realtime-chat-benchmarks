@@ -17,16 +17,16 @@ var app = express();
 app.set('showStackError', true);
 app.locals.pretty = true;
 
-// CORs support
-app.use(function(req, res, next){
-    // Enable CORs support
-    res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
-    res.header('Access-Control-Allow-Headers', 'Content-Type');
-    // use utf8 encoding
-    res.charset = 'utf-8';
-    next();
-});
+//// CORs support
+//app.use(function(req, res, next){
+    //// Enable CORs support
+    //res.header('Access-Control-Allow-Origin', '*');
+    //res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
+    //res.header('Access-Control-Allow-Headers', 'Content-Type');
+    //// use utf8 encoding
+    //res.charset = 'utf-8';
+    //next();
+//});
 
 // Log requests
 var routeLogTransports = 
@@ -51,22 +51,22 @@ app.get('/', function routeHome(req, res){
     return res.render('html-client.html');
 });
 
-app.get('/eventsource', function routeEventsource(req, res){
+app.get('/eventsource', function routeEventsource(req, res, next){
     console.log('>> EventSource connected');
 
     req.socket.setTimeout(Infinity);
-    req.socket.setNoDelay(true);
-    res.writeHead(200, {
-        'Content-Type': 'text/event-stream', 
-        'Cache-Control': 'no-cache', 
-        'Connection': 'keep-alive'
-    });
+    //req.socket.setNoDelay(true);
+    res.statusCode = 200;
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Connection', 'keep-alive');
+
     res.write(':ok\n\n');
 
     var sendMessages = setInterval(function(){
         console.log('>> sending message');
-        res.write('id: ' + (new Date()).toLocaleTimeString() + '\n');
-        res.write('data: hello \n');
+        res.write('id: 1 \n');
+        res.write('data: {"data":42} \n\n');
     }, 400);
 
     // If the client disconnects, let's not leak any resources
@@ -74,6 +74,7 @@ app.get('/eventsource', function routeEventsource(req, res){
         console.log('[x] Res disconnected!');
         clearInterval(sendMessages);
     });
+
 });
 
 // Then, handle missing pages
