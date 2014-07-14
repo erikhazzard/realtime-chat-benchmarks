@@ -66,8 +66,16 @@ app.get('/eventsource', function routeEventsource(req, res, next){
     var sendMessages = setInterval(function(){
         console.log('>> sending message');
         res.write('id: 1 \n');
-        res.write('data: {"data":42} \n\n');
-    }, 400);
+        var color = (
+            (Math.random() * 16 | 0).toString(16) + 
+            (Math.random() * 16 | 0).toString(16) + 
+            (Math.random() * 16 | 0).toString(16) + 
+            (Math.random() * 16 | 0).toString(16) + 
+            (Math.random() * 16 | 0).toString(16) + 
+            (Math.random() * 16 | 0).toString(16)
+        );
+        res.write('data: {"bg":"#' + color + '"} \n\n');
+    }, 10);
 
     // If the client disconnects, let's not leak any resources
     res.on('close', function() {
