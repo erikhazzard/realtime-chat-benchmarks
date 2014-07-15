@@ -13,7 +13,8 @@ connection.on('ready', function(){
                 console.log('Waiting for messages on : ' + routing);
 
                 queue.subscribe(function(msg){
-                    console.log(" [x] %s", msg.data.toString('utf-8'));
+                    var message = JSON.parse(msg.data.toString('utf-8'));
+                    console.log(message);
                 });
         });
 
