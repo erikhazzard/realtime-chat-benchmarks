@@ -7,7 +7,7 @@
 var express = require('express');
 var winston = require('winston');
 var expressWinston = require('express-winston');
-<<<<<<< HEAD
+var compression = require('compression');
 var colors = require('colors');
 
 var totalClients = 0;
@@ -25,9 +25,9 @@ var statsId = setInterval(function () {
     );
 }, 1500);
 
-=======
-var compression = require('compression');
->>>>>>> 1317c2a00919a38363d16e33e270c8ccb6e87384
+
+
+
 
 console.log('Server starting...');
 
