@@ -87,9 +87,11 @@ app.get('/eventsource', function routeEventsource(req, res, next){
     res.setHeader('Content-Type', 'text/event-stream');
     res.setHeader('Cache-Control', 'no-cache');
     res.setHeader('Connection', 'keep-alive');
+    res.write("retry: 10000\n");
+    res.write("event: connecttime\n");
 
     res.write('\n');
-    res.write('\n');
+    
 
     // var sendMessages = setInterval(function(){
     //     color = '#336699';
