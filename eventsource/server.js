@@ -1,5 +1,5 @@
 var SSE = require('sse');
-  , http = require('http');
+var http = require('http');
 
 var server = http.createServer(function(req, res) {
   console.log("Client connected", req.headers)

@@ -80,34 +80,42 @@ var id = 0;
 app.get('/eventsource', function routeEventsource(req, res, next){
     console.log('>> EventSource connected');
     totalClients++;
-
+    var color = "hello";
     req.socket.setTimeout(Infinity);
     //req.socket.setNoDelay(true);
     res.statusCode = 200;
     res.setHeader('Content-Type', 'text/event-stream');
     res.setHeader('Cache-Control', 'no-cache');
     res.setHeader('Connection', 'keep-alive');
-    res.write("retry: 10000\n");
-    res.write("event: connecttime\n");
+    res.write("retry: 1000\n");
+    //res.write("event: hello\n");
+    res.write('data: START SENDING\n\n');
 
-    res.write('\n');
+    
+    id++;
+
+    var sendMessages = setInterval(function(){
+        console.log("Hello")
+        id++;
+        res.write('id: '+(id)+' \n');
+        res.write("retry: 1000\n");
+        //res.write("event: hello\n");
+        res.write('data: ERSTE NACHRICHT\n\n');
+
+
+
+        id++;
+        
+        res.write('id: '+(id)+' \n');
+        res.write("retry: 1000\n");
+        res.write("event: room-1\n");
+        res.write('data: ZWEITE NACHRICHT\n\n');
+
+    }, 1000);
+
     
 
-    // var sendMessages = setInterval(function(){
-    //     color = '#336699';
-    //     res.write('id: '+(id)+' \n');
-    //     res.write('data: {"bg":"#' + color + '"}\n\n');
-    // }, 1000);
 
-    //var d = new Date();
-
-
-    // var sendMessages = setInterval(function(){
-    //     color = '#336699';
-    //     console.log('sent');
-    //     res.write('id: 1 \n');
-    //     res.write('data: {"bg":"#' + color + '"}\n\n');
-    // }, 100);
 
 
     // If the client disconnects, let's not leak any resources
@@ -117,7 +125,7 @@ app.get('/eventsource', function routeEventsource(req, res, next){
         //clearInterval(sendMessages);
     });
 
-    id++;
+    
 
 });
 
