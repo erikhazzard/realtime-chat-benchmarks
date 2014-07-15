@@ -9,8 +9,14 @@ var winston = require('winston');
 var expressWinston = require('express-winston');
 var compression = require('compression');
 var colors = require('colors');
+var http = require('http');
 
 var totalClients = 0;
+
+
+http.globalAgent.maxSockets = 10000;
+ 
+
 
 function format (val){
     return Math.round(((val / 1024 / 1024) * 1000) / 1000) + 'mb';
@@ -23,10 +29,11 @@ var statsId = setInterval(function () {
         ("\tHeap Used: " + format(process.memoryUsage().heapUsed)).magenta +
         ("\t\tNr Clients: " + (""+totalClients).white)
     );
+
+    
+    console.log("http.globalAgent", http.globalAgent.sockets);
+
 }, 1500);
-
-
-
 
 
 console.log('Server starting...');
@@ -95,7 +102,6 @@ app.get('/eventsource', function routeEventsource(req, res, next){
     id++;
 
     var sendMessages = setInterval(function(){
-        console.log("Hello")
         id++;
         res.write('id: '+(id)+' \n');
         res.write("retry: 1000\n");
@@ -122,7 +128,7 @@ app.get('/eventsource', function routeEventsource(req, res, next){
     res.on('close', function() {
         console.log('[x] Res disconnected!');
         totalClients--;
-        //clearInterval(sendMessages);
+        clearInterval(sendMessages);
     });
 
     

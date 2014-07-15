@@ -10,7 +10,12 @@ var _ = require("lodash");
 var http = require('http');
 http.globalAgent.maxSockets = Infinity;
 
-async.eachLimit(_.range(1), 2, function(index, callback){
+
+var nrOfClients = process.argv[2] || 1;
+
+console.log("Number of Clients: ", nrOfClients);
+
+async.eachLimit(_.range(nrOfClients), 20, function(index, callback){
   console.log("Create client", "index", index);
 
   var es = new EventSource('http://localhost:8010/eventsource');
@@ -18,7 +23,7 @@ async.eachLimit(_.range(1), 2, function(index, callback){
 
   // Message callbacks
   es.onmessage = function(i){
-    return function(e, message) {
+    return function(e) {
         console.log('Got message :::', i, e.data);
         //console.log(e.data);
     };
@@ -28,9 +33,9 @@ async.eachLimit(_.range(1), 2, function(index, callback){
       console.log('ERROR!');
   };
 
-  debugger;
+  
   es.addEventListener("room-1", function(e){
-    console.log('Got message :::', i, e.data);
+    console.log('Got message :::', e.data);
   });
 
 
