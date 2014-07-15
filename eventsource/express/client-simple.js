@@ -6,6 +6,9 @@
  *  ======================================================================== */
 var EventSource = require('eventsource');
 
+
+console.log("Creates client")
+
 var es = new EventSource('http://localhost:8010/eventsource');
 //var es = new EventSource('http://127.0.0.1:8010/sse');
 

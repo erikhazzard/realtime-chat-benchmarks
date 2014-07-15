@@ -7,6 +7,23 @@
 var express = require('express');
 var winston = require('winston');
 var expressWinston = require('express-winston');
+var colors = require('colors');
+
+var totalClients = 0;
+
+function format (val){
+    return Math.round(((val / 1024 / 1024) * 1000) / 1000) + 'mb';
+}
+
+var statsId = setInterval(function () {
+    console.log('Memory Usage :: '.bold.green.inverse +
+        ("\tRSS: " + format(process.memoryUsage().rss)).blue +
+        ("\tHeap Total: " + format(process.memoryUsage().heapTotal)).yellow +
+        ("\tHeap Used: " + format(process.memoryUsage().heapUsed)).magenta +
+        ("\t\tNr Clients: " + (""+totalClients).white)
+    );
+}, 1500);
+
 
 console.log('Server starting...');
 
@@ -51,8 +68,12 @@ app.get('/', function routeHome(req, res){
     return res.render('html-client.html');
 });
 
+
+var id = 0;
+
 app.get('/eventsource', function routeEventsource(req, res, next){
     console.log('>> EventSource connected');
+    totalClients++;
 
     req.socket.setTimeout(Infinity);
     //req.socket.setNoDelay(true);
@@ -61,19 +82,30 @@ app.get('/eventsource', function routeEventsource(req, res, next){
     res.setHeader('Cache-Control', 'no-cache');
     res.setHeader('Connection', 'keep-alive');
 
-    res.write(':ok\n\n');
+    res.write('\n');
+    res.write('\n');
 
-    var sendMessages = setInterval(function(){
-        color = '#336699';
-        res.write('id: 1 \n');
-        res.write('data: {"bg":"#' + color + '"}\n\n');
-    }, 10);
+    // var sendMessages = setInterval(function(){
+    //     color = '#336699';
+    //     res.write('id: '+(id)+' \n');
+    //     res.write('data: {"bg":"#' + color + '"}\n\n');
+    // }, 1000);
+
+    //var d = new Date();
+
+    // color = '#336699';
+    // res.write('id: '+( d.getMilliseconds() )+' \n');
+
+    // res.write('data: {"bg":"#' + color + '"}\n\n');    
 
     // If the client disconnects, let's not leak any resources
     res.on('close', function() {
         console.log('[x] Res disconnected!');
-        clearInterval(sendMessages);
+        totalClients--;
+        //clearInterval(sendMessages);
     });
+
+    id++;
 
 });
 
