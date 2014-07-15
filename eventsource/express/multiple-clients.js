@@ -7,8 +7,10 @@
 var EventSource = require('eventsource');
 var async = require("async");
 var _ = require("lodash");
+var http = require('http');
+http.globalAgent.maxSockets = Infinity;
 
-async.each(_.range(20), function(index, callback){
+async.eachLimit(_.range(20), 2, function(index, callback){
   console.log("Create client", "index", index);
 
   var es = new EventSource('http://localhost:8010/eventsource');
@@ -26,7 +28,9 @@ async.each(_.range(20), function(index, callback){
       console.log('ERROR!');
   };
 
-  callback();
+  setTimeout(function(){
+    callback();
+  }, 1000);
   
 
 }, function(results){
