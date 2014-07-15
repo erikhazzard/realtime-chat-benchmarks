@@ -10,7 +10,7 @@ var _ = require("lodash");
 var http = require('http');
 http.globalAgent.maxSockets = Infinity;
 
-async.eachLimit(_.range(20), 2, function(index, callback){
+async.eachLimit(_.range(2000), 2, function(index, callback){
   console.log("Create client", "index", index);
 
   var es = new EventSource('http://localhost:8010/eventsource');
