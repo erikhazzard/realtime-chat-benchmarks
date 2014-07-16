@@ -9,8 +9,16 @@ var winston = require('winston');
 var expressWinston = require('express-winston');
 var compression = require('compression');
 var colors = require('colors');
+var http = require('http');
 
 var totalClients = 0;
+
+
+var port = process.argv[2] || 8010;
+
+http.globalAgent.maxSockets = 10000;
+ 
+
 
 function format (val){
     return Math.round(((val / 1024 / 1024) * 1000) / 1000) + 'mb';
@@ -23,10 +31,11 @@ var statsId = setInterval(function () {
         ("\tHeap Used: " + format(process.memoryUsage().heapUsed)).magenta +
         ("\t\tNr Clients: " + (""+totalClients).white)
     );
+
+    
+    console.log("http.globalAgent", http.globalAgent.sockets);
+
 }, 1500);
-
-
-
 
 
 console.log('Server starting...');
@@ -77,45 +86,54 @@ app.get('/', function routeHome(req, res){
 
 var id = 0;
 
-app.get('/eventsource', function routeEventsource(req, res, next){
-    console.log('>> EventSource connected');
-    totalClients++;
 
+
+app.get('/eventsource', function routeEventsource(req, res, next){
+    //console.log('>> EventSource connected');
+    totalClients++;
+    var color = "hello";
     req.socket.setTimeout(Infinity);
     //req.socket.setNoDelay(true);
     res.statusCode = 200;
     res.setHeader('Content-Type', 'text/event-stream');
     res.setHeader('Cache-Control', 'no-cache');
     res.setHeader('Connection', 'keep-alive');
+    res.write("retry: 1000\n");
+    //res.write("event: hello\n");
+    res.write('data: START SENDING\n\n');
 
-    res.write('\n');
-    res.write('\n');
+    
+    id++;
 
-    // var sendMessages = setInterval(function(){
-    //     color = '#336699';
-    //     res.write('id: '+(id)+' \n');
-    //     res.write('data: {"bg":"#' + color + '"}\n\n');
-    // }, 1000);
+    var sendMessages = setInterval(function(){
+        id++;
+        res.write('id: '+(id)+' \n');
+        res.write("retry: 1000\n");
+        //res.write("event: hello\n");
+        res.write('data: ERSTE NACHRICHT\n\n');
 
-    //var d = new Date();
+        // id++;
+        
+        // res.write('id: '+(id)+' \n');
+        // res.write("retry: 1000\n");
+        // res.write("event: room-1\n");
+        // res.write('data: ZWEITE NACHRICHT\n\n');
+
+    }, 1000);
+
+    
 
 
-    // var sendMessages = setInterval(function(){
-    //     color = '#336699';
-    //     console.log('sent');
-    //     res.write('id: 1 \n');
-    //     res.write('data: {"bg":"#' + color + '"}\n\n');
-    // }, 100);
 
 
     // If the client disconnects, let's not leak any resources
     res.on('close', function() {
         console.log('[x] Res disconnected!');
         totalClients--;
-        //clearInterval(sendMessages);
+        clearInterval(sendMessages);
     });
 
-    id++;
+    
 
 });
 
@@ -135,5 +153,5 @@ app.use(function handleMissingPage(req, res, next){
     winston.error('Invalid page requested: ' + req.url);
     res.send(404, 'Invalid page');
 });
-
-var server = app.listen(8010);
+console.log("Running on port: ", port);
+var server = app.listen(port);
