@@ -30,14 +30,16 @@ console.log("Connect to port: ", PORT);
 var startTime = new Date().getTime();
 
 var logFileTime = './logs/time.log';
+var logFileCpuAvg = './logs/cpuAvg.log';
 //Set Log file to zero
 fs.writeFile(logFileTime, "", function (err) { if (err) return console.log(err);});
+fs.writeFile(logFileCpuAvg, "", function (err) { if (err) return console.log(err);});
 
 var iterationsDone = 0;
 var clients = [];
 var i = 0;
 
-async.eachLimit(_.range(NROFCLIENTS), 20, function(index, callback){
+async.eachLimit(_.range(NROFCLIENTS), 200, function(index, callback){
 
   var roomId = Math.floor(index / MAX_PEOPLE_ROOM);
   var headers = {headers: {'room': "r-"+roomId}};
@@ -124,16 +126,23 @@ async.eachLimit(_.range(NROFCLIENTS), 20, function(index, callback){
               console.log("Finished all iterations");
               clearInterval(intervalId);
 
+                var finishedTime = new Date().getTime();  
+                var total = finishedTime - startTime;
+
               helpers.calcAvg( logFileTime, 0, function(val){
                 console.log("Average time to send one message to a room", Math.round(val * 100) / 100, (val/1000).toFixed(2), "(s)");
                 console.log("Message Received: ", received_msg);
-
-                var finishedTime = new Date().getTime();
-
-                var total = finishedTime - startTime;
                 console.log("Total time: ", total/1000," seconds");
-                //fs.writeFile(logFileTime, "", function (err) { if (err) return console.log(err);});
-                process.exit(0);
+
+                helpers.calcAvg( logFileCpuAvg, 0, function(cpuAvg){
+                  console.log("CPU Avg: ", cpuAvg.toFixed(2))
+                  
+                  //fs.writeFile(logFileTime, "", function (err) { if (err) return console.log(err);});
+                  process.exit(0);
+
+                });
+
+                
               });
 
               

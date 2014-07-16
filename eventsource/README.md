@@ -49,12 +49,12 @@ Payload: Javascript Timestamp
 ### How long does it takes to send 1 message to x clients? (x rooms a 6 people)
 | Type        | Test             | Machine      | Senders      | Clients    | Iterat.      | Avg Time | Total      | CPU Avg  | #Msg   |
 | ----------- | ---------------- | ------------ | ------------ | ---------: | -----------: | -------: | ---------: | -------: | -----: |
-| Normal      | Send Msg         | roundrobin   | 1 per room   | 1000       | 1            | 0.02 s   | 3.353 s    |          | 1000   |
-| Normal      | Send Msg         | roundrobin   | 1 per room   | 1000       | 10           | 0.02 s   | 12.639 s   |          | 10000  |
-| Normal      | Send Msg         | roundrobin   | 1 per room   | 1000       | 100          | 0.01 s   | 108.67 s   |          | 101240 |
-| Normal      | Send Msg         | roundrobin   | 1 per room   | 2000       | 1            | 0.03 s   | 5.837  s   |          | 2490   |
-| Normal      | Send Msg         | roundrobin   | 1 per room   | 2000       | 10           | 0.03 s   | 24.842 s   |          | 20020  |
-| Normal      | Send Msg         | roundrobin   | 1 per room   | 2000       | 100          | 0.09 s   | 266.289 s  |          | 201758 |
+| Normal      | Send Msg         | roundrobin   | 1 per room   | 1000       | 1            | 0.02 s   | 3.353 s    |  6.6  %  | 1000   |
+| Normal      | Send Msg         | roundrobin   | 1 per room   | 1000       | 10           | 0.02 s   | 13.595 s   |  9.33 %  | 10000  |
+| Normal      | Send Msg         | roundrobin   | 1 per room   | 1000       | 100          | 0.01 s   | 108.67 s   |  5.41 %  | 101240 |
+| Normal      | Send Msg         | roundrobin   | 1 per room   | 2000       | 1            | 0.03 s   | 5.837  s   |  4.27 %  | 2490   |
+| Normal      | Send Msg         | roundrobin   | 1 per room   | 2000       | 10           | 0.03 s   | 24.842 s   |  3.67 %  | 20020  |
+| Normal      | Send Msg         | roundrobin   | 1 per room   | 2000       | 100          | 0.09 s   | 266.289 s  |  3.54 %  | 201758 |
 
 
 
