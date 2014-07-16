@@ -14,6 +14,8 @@ var http = require('http');
 var totalClients = 0;
 
 
+var port = process.argv[2] || 8010;
+
 http.globalAgent.maxSockets = 10000;
  
 
@@ -84,8 +86,10 @@ app.get('/', function routeHome(req, res){
 
 var id = 0;
 
+
+
 app.get('/eventsource', function routeEventsource(req, res, next){
-    console.log('>> EventSource connected');
+    //console.log('>> EventSource connected');
     totalClients++;
     var color = "hello";
     req.socket.setTimeout(Infinity);
@@ -108,14 +112,12 @@ app.get('/eventsource', function routeEventsource(req, res, next){
         //res.write("event: hello\n");
         res.write('data: ERSTE NACHRICHT\n\n');
 
-
-
-        id++;
+        // id++;
         
-        res.write('id: '+(id)+' \n');
-        res.write("retry: 1000\n");
-        res.write("event: room-1\n");
-        res.write('data: ZWEITE NACHRICHT\n\n');
+        // res.write('id: '+(id)+' \n');
+        // res.write("retry: 1000\n");
+        // res.write("event: room-1\n");
+        // res.write('data: ZWEITE NACHRICHT\n\n');
 
     }, 1000);
 
@@ -151,5 +153,5 @@ app.use(function handleMissingPage(req, res, next){
     winston.error('Invalid page requested: ' + req.url);
     res.send(404, 'Invalid page');
 });
-
-var server = app.listen(8010);
+console.log("Running on port: ", port);
+var server = app.listen(port);

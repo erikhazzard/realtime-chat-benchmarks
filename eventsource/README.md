@@ -6,6 +6,14 @@
 * Authentification
 * CORS support
 * Cookies
+* Backlog
+
+
+RightScale
+–nouse-idle-notifications
+Gateaway timeouts
+
+
 
 
 ## Findings
@@ -43,5 +51,13 @@
 ## Terms
 * session affinity
 * sticky session
+* Last-Event-ID: 43
 
-Last-Event-ID: 43
+
+## Optimize Node
+* http://stackoverflow.com/questions/12886438/node-js-app-has-periodic-slowness-and-or-timeouts-does-not-accept-incoming-requ
+* http://stackoverflow.com/questions/19626527/mac-osx-10-9-listen-backlog-works-not-properly
+
+
+
+
