@@ -10,6 +10,10 @@ var expressWinston = require('express-winston');
 var compression = require('compression');
 var colors = require('colors');
 var http = require('http');
+var _ = require('lodash');
+var async = require("async");
+var bodyParser = require('body-parser');
+
 
 var totalClients = 0;
 
@@ -17,8 +21,11 @@ var totalClients = 0;
 var port = process.argv[2] || 8010;
 
 http.globalAgent.maxSockets = 10000;
- 
 
+
+
+
+var clients = [];
 
 function format (val){
     return Math.round(((val / 1024 / 1024) * 1000) / 1000) + 'mb';
@@ -32,8 +39,6 @@ var statsId = setInterval(function () {
         ("\t\tNr Clients: " + (""+totalClients).white)
     );
 
-    
-    console.log("http.globalAgent", http.globalAgent.sockets);
 
 }, 1500);
 
@@ -46,6 +51,8 @@ var app = express();
 // App config
 app.set('showStackError', true);
 app.locals.pretty = true;
+
+app.use(bodyParser());
 
 //// CORs support
 app.use(compression());
@@ -86,51 +93,69 @@ app.get('/', function routeHome(req, res){
 
 var id = 0;
 
+var clients_per_room = {};
+
+app.post('/msg', function msg(req, res, next){
+    
+    var roomId = req.body["msg"];
+    
+    console.log("Received POST request...", roomId, clients_per_room[roomId].length);
+
+    async.each(clients_per_room[roomId], function(client, callback){
+        
+        var receivedTime = new Date().getTime();
+
+        client.write("retry: 10000\n");
+        client.write("event: "+(roomId)+"\n");
+        client.write('data: '+(receivedTime)+'\n\n');
+        callback();
+
+    }, function(results){
+        console.log("Finisshed all");
+        res.send(roomId);
+    });
+
+
+
+});
+
+
 
 
 app.get('/eventsource', function routeEventsource(req, res, next){
-    //console.log('>> EventSource connected');
+    //console.log('>> EventSource connected' );
+
+
+    var room = req.headers["room"];
+
+    
+
+    if(clients_per_room[room]){
+        clients_per_room[room].push(res);
+    }else{
+        clients_per_room[room] = [res];
+    }
+
     totalClients++;
-    var color = "hello";
+
     req.socket.setTimeout(Infinity);
     //req.socket.setNoDelay(true);
     res.statusCode = 200;
     res.setHeader('Content-Type', 'text/event-stream');
     res.setHeader('Cache-Control', 'no-cache');
     res.setHeader('Connection', 'keep-alive');
-    res.write("retry: 10000\n");
-    //res.write("event: hello\n");
-    res.write('data: START SENDING\n\n');
+    // res.write("retry: 10000\n");
+    // res.write("event: "+(room)+"\n");
+    // res.write('data: INIT MSG_'+(room)+'\n\n');
 
     
     id++;
-
-    var sendMessages = setInterval(function(){
-        id++;
-        res.write('id: '+(id)+' \n');
-        res.write("retry: 100000\n");
-        //res.write("event: hello\n");
-        res.write('data: ERSTE NACHRICHT\n\n');
-
-        // id++;
-        
-        // res.write('id: '+(id)+' \n');
-        // res.write("retry: 1000\n");
-        // res.write("event: room-1\n");
-        // res.write('data: ZWEITE NACHRICHT\n\n');
-
-    }, 1000);
-
-    
-
-
-
 
     // If the client disconnects, let's not leak any resources
     res.on('close', function() {
         console.log('[x] Res disconnected!');
         totalClients--;
-        clearInterval(sendMessages);
+        
     });
 
     

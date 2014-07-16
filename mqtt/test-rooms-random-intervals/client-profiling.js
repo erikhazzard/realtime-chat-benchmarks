@@ -59,7 +59,7 @@ async.each(_.range(NUM_CLIENTS), function(i, callback) {
     var client = mqtt.createClient(8883, mqttUri);
 
 
-    if(index === 6){
+    if(index === MAX_NR_PEOPLE_IN_ROOM){
         index = 0;
 
     }

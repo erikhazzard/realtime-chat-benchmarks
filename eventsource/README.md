@@ -9,7 +9,7 @@
 * Backlog
 
 
-RightScale
+* sRightScale
 –nouse-idle-notifications
 Gateaway timeouts
 
@@ -31,13 +31,42 @@ Gateaway timeouts
   $ node server-express.js
 
 
-  # 2. Connect x number of event source clients (ex: 100)
+  # 2. Connect x number of event source clients (ex: clients 100, port: 8123)
   # Takes in the number of clients to create as a first command line argument
-  $ node multiple-clients.js
+  $ node multiple-clients.js 100 8123
   
   # The script calls x times the client-simple.js script in the express folder
   
 ```
+
+## Results
+In this test we first connect x number of clients to the server through an eventsource connection. While doing that we put each client in a room
+with max 6 people. After the creation phase one client in each room sends one message. We repeat that message sending process x times.
+
+
+Payload: Javascript Timestamp
+
+### How long does it takes to send 1 message to x clients? (x rooms a 6 people)
+| Type        | Test             | Machine      | Senders      | Clients    | Iterat.      | Avg Time | Total      | CPU Avg  | #Msg   |
+| ----------- | ---------------- | ------------ | ------------ | ---------: | -----------: | -------: | ---------: | -------: | -----: |
+| Normal      | Send Msg         | roundrobin   | 1 per room   | 1000       | 1            | 0.02 s   | 3.353 s    |          | 1000   |
+| Normal      | Send Msg         | roundrobin   | 1 per room   | 1000       | 10           | 0.02 s   | 12.639 s   |          | 10000  |
+| Normal      | Send Msg         | roundrobin   | 1 per room   | 1000       | 100          | 0.01 s   | 108.67 s   |          | 101240 |
+| Normal      | Send Msg         | roundrobin   | 1 per room   | 2000       | 1            | 0.03 s   | 5.837  s   |          | 2490   |
+| Normal      | Send Msg         | roundrobin   | 1 per room   | 2000       | 10           | 0.03 s   | 24.842 s   |          | 20020  |
+| Normal      | Send Msg         | roundrobin   | 1 per room   | 2000       | 100          | 0.09 s   | 266.289 s  |          | 201758 |
+
+
+
+
+
+
+
+## Libaries
+
+* https://github.com/segmentio/sse
+
+
 
 ## Links
 * [Load Testing Server Sent Event Streams](http://matthiasnehlsen.com/blog/2013/05/11/load-testing-server-sent-event-streams/)
@@ -48,16 +77,28 @@ Gateaway timeouts
 * [Example Archicture for SSE](http://www.slideshare.net/beatfactor/sse-23276287)
 * [What are Long-Polling, Websockets, Server-Sent Events (SSE) and Comet?](http://stackoverflow.com/questions/11077857/what-are-long-polling-websockets-server-sent-events-sse-and-comet)
 
+
+# Performance Node.JS
+https://hacks.mozilla.org/2013/01/building-a-node-js-server-that-wont-melt-a-node-js-holiday-season-part-5/
+
+## Session Affinity
+* http://shlomoswidler.com/2010/04/elastic-load-balancing-with-sticky-sessions.html
+* http://stackoverflow.com/questions/1040025/difference-between-session-affinity-and-sticky-session
+* http://stackoverflow.com/questions/1553645/pros-and-cons-of-sticky-session-session-affinity-load-blancing-strategy
+
 ## Terms
 * session affinity
 * sticky session
 * Last-Event-ID: 43
+* 
+# Interesting Companies
+* http://www.lightstreamer.com/
 
 
 ## Optimize Node
 * http://stackoverflow.com/questions/12886438/node-js-app-has-periodic-slowness-and-or-timeouts-does-not-accept-incoming-requ
 * http://stackoverflow.com/questions/19626527/mac-osx-10-9-listen-backlog-works-not-properly
-
+* http://blog.arc90.com/2012/03/05/profiling-node-programs-on-mac-os-x/
 
 
 
