@@ -126,6 +126,7 @@ app.get('/eventsource', function routeEventsource(req, res, next){
 
 
     var room = req.headers["room"];
+    var cientId = req.headers["clientid"];
 
     
 
@@ -146,15 +147,16 @@ app.get('/eventsource', function routeEventsource(req, res, next){
     res.setHeader('Content-Type', 'text/event-stream');
     res.setHeader('Cache-Control', 'no-cache');
     res.setHeader('Connection', 'keep-alive');
-    // res.write("retry: 10000\n");
-    // res.write("event: "+(room)+"\n");
-    // res.write('data: INIT MSG_'+(room)+'\n\n');
+    
+    res.write("retry: 10000\n");
+    res.write("event: connected\n");
+    res.write('data: '+(cientId)+'\n\n');
 
     
     id++;
 
     // If the client disconnects, let's not leak any resources
-    res.on('close', function() {
+    res.on('close',  function() {
         console.log('[x] Res disconnected!');
         totalClients--;
         

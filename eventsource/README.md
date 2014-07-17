@@ -40,21 +40,38 @@ Gateaway timeouts
 ```
 
 ## Results
+
+### How long does it takes to connect clients?
+
+Running the script: ```$node client-profiling.js NR_OF_CLIENTS NR_OF_ITERATIONS MQTT_URI```
+
+| Type    | Test           | Machine    | Number Clients  | Time in seconds | Protocol    | Env   |
+|---------|----------------|------------|----------------:|----------------:|-------------|-------|
+| Normal  | Create Clients | roundrobin |           1000  | 1.512  S        | EventSource | Local |
+| Normal  | Create Clients | roundrobin |           2000  | 2.249  S        | EventSource | Local |
+| Normal  | Create Clients | roundrobin |           3000  | 17.598 S        | EventSource | Local |
+| Normal  | Create Clients | roundrobin |           4000  | 25.09  S        | EventSource | Local |
+| Normal  | Create Clients | roundrobin |           5000  | 46.373 S        | EventSource | Local |
+
+### How long does it takes to send 1 message to x clients? (x rooms a 6 people)
+
 In this test we first connect x number of clients to the server through an eventsource connection. While doing that we put each client in a room
 with max 6 people. After the creation phase one client in each room sends one message. We repeat that message sending process x times.
 
-
 Payload: Javascript Timestamp
 
-### How long does it takes to send 1 message to x clients? (x rooms a 6 people)
-| Type        | Test             | Machine      | Senders      | Clients    | Iterat.      | Avg Time | Total      | CPU Avg  | #Msg   |
-| ----------- | ---------------- | ------------ | ------------ | ---------: | -----------: | -------: | ---------: | -------: | -----: |
-| Normal      | Send Msg         | roundrobin   | 1 per room   | 1000       | 1            | 0.02 s   | 3.353 s    |  6.6  %  | 1000   |
-| Normal      | Send Msg         | roundrobin   | 1 per room   | 1000       | 10           | 0.02 s   | 13.595 s   |  9.33 %  | 10000  |
-| Normal      | Send Msg         | roundrobin   | 1 per room   | 1000       | 100          | 0.01 s   | 108.67 s   |  5.41 %  | 101240 |
-| Normal      | Send Msg         | roundrobin   | 1 per room   | 2000       | 1            | 0.03 s   | 5.837  s   |  4.27 %  | 2490   |
-| Normal      | Send Msg         | roundrobin   | 1 per room   | 2000       | 10           | 0.03 s   | 24.842 s   |  3.67 %  | 20020  |
-| Normal      | Send Msg         | roundrobin   | 1 per room   | 2000       | 100          | 0.09 s   | 266.289 s  |  3.54 %  | 201758 |
+| Type        | Test             | Machine      | Senders      | Clients    | Iterat.      | Avg Time | Total       | CPU Avg  | #Msg   |
+| ----------- | ---------------- | ------------ | ------------ | ---------: | -----------: | -------: | ----------: | -------: | -----: |
+| Normal      | Send Msg         | roundrobin   | 1 per room   | 1000       | 1            | 0.02 s   | 3.353 s     |  6.6  %  | 1000   |
+| Normal      | Send Msg         | roundrobin   | 1 per room   | 1000       | 10           | 0.02 s   | 13.595 s    |  9.33 %  | 10000  |
+| Normal      | Send Msg         | roundrobin   | 1 per room   | 1000       | 100          | 0.01 s   | 108.67 s    |  5.41 %  | 101240 |
+| Normal      | Send Msg         | roundrobin   | 1 per room   | 2000       | 1            | 0.03 s   | 5.837  s    |  4.27 %  | 2490   |
+| Normal      | Send Msg         | roundrobin   | 1 per room   | 2000       | 10           | 0.03 s   | 24.842 s    |  3.67 %  | 20020  |
+| Normal      | Send Msg         | roundrobin   | 1 per room   | 2000       | 100          | 0.09 s   | 266.289 s   |  3.54 %  | 201758 |
+| Normal      | Send Msg         | roundrobin   | 1 per room   | 3000       | 1            | 0.08 s   | 24.91 s     |  6.54 %  | 3264   |
+| Normal      | Send Msg         | roundrobin   | 1 per room   | 3000       | 10           | 0.11 s   | 42.7 s      |  3.32 %  | 30450  |
+| Normal      | Send Msg         | roundrobin   | 1 per room   | 3000       | 100          | 0.35 s   | 500.89 s    |  3.28 %  | 303534 |
+| Normal      | Send Msg         | roundrobin   | 1 per room   | 4000       | 100          | 0.76 s   | 1054.449 s  |  3.17 %  | 406597 |
 
 
 
