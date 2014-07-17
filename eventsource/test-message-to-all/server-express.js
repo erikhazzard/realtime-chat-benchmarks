@@ -17,14 +17,11 @@ var bodyParser = require('body-parser');
 
 var totalClients = 0;
 
-
 var port = process.argv[2] || 8010;
 
 http.globalAgent.maxSockets = 10000;
 
-
-
-
+var msgSend = 0;
 var clients = [];
 
 function format (val){
@@ -36,7 +33,8 @@ var statsId = setInterval(function () {
         ("\tRSS: " + format(process.memoryUsage().rss)).blue +
         ("\tHeap Total: " + format(process.memoryUsage().heapTotal)).yellow +
         ("\tHeap Used: " + format(process.memoryUsage().heapUsed)).magenta +
-        ("\t\tNr Clients: " + (""+totalClients).white)
+        ("\t\tNr Clients: " + (""+totalClients).white) +
+        (("\t\Msg Sent: " + ""+msgSend).cyan)
     );
 
 
@@ -68,16 +66,16 @@ app.use(function(req, res, next){
 
 
 // Log requests
-var routeLogTransports = 
-app.use(expressWinston.logger({
-    transports: [
-        new winston.transports.Console({
-            json: false, colorize: true
-        })
-    ],
-    meta: true,
-    level: 'verbose'
-}));
+// var routeLogTransports = 
+// app.use(expressWinston.logger({
+//     transports: [
+//         new winston.transports.Console({
+//             json: false, colorize: true
+//         })
+//     ],
+//     meta: true,
+//     level: 'verbose'
+// }));
 app.engine('html', require('ejs').renderFile);
 app.set('views', __dirname); 
 
@@ -99,8 +97,6 @@ app.post('/msg', function msg(req, res, next){
     
     var roomId = req.body["msg"];
     
-    console.log("Received POST request...", roomId, clients_per_room[roomId].length);
-
     async.each(clients_per_room[roomId], function(client, callback){
         
         var receivedTime = new Date().getTime();
@@ -108,10 +104,13 @@ app.post('/msg', function msg(req, res, next){
         client.write("retry: 10000\n");
         client.write("event: "+(roomId)+"\n");
         client.write('data: '+(receivedTime)+'\n\n');
+
+        msgSend++;
+
         callback();
 
     }, function(results){
-        console.log("Finisshed all");
+        
         res.send(roomId);
     });
 
@@ -127,6 +126,7 @@ app.get('/eventsource', function routeEventsource(req, res, next){
 
 
     var room = req.headers["room"];
+    var cientId = req.headers["clientid"];
 
     
 
@@ -138,21 +138,25 @@ app.get('/eventsource', function routeEventsource(req, res, next){
 
     totalClients++;
 
-    req.socket.setTimeout(Infinity);
+    //req.socket.setTimeout(Infinity);
+
+
     //req.socket.setNoDelay(true);
+    res.setTimeout( 1000 * 60 * 60 * 24);
     res.statusCode = 200;
     res.setHeader('Content-Type', 'text/event-stream');
     res.setHeader('Cache-Control', 'no-cache');
     res.setHeader('Connection', 'keep-alive');
-    // res.write("retry: 10000\n");
-    // res.write("event: "+(room)+"\n");
-    // res.write('data: INIT MSG_'+(room)+'\n\n');
+    
+    res.write("retry: 10000\n");
+    res.write("event: connected\n");
+    res.write('data: '+(cientId)+'\n\n');
 
     
     id++;
 
     // If the client disconnects, let's not leak any resources
-    res.on('close', function() {
+    res.on('close',  function() {
         console.log('[x] Res disconnected!');
         totalClients--;
         
