@@ -19,7 +19,7 @@ if (cluster.isMaster) {
         connection.on('ready', function(){
             connection.exchange( 'topic_logs', {type: 'topic', autoDelete: false}, function(exchange){
                 exchange.publish('roomId1', JSON.stringify(message));
-                if(i % 200 === 0){
+                if (i % 200 === 0) {
                     console.log('Sent message (' + cluster.worker.id + ') | i: ' + i)
                 }
             });
