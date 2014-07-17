@@ -13,6 +13,9 @@ var http = require('http');
 var _ = require('lodash');
 var async = require("async");
 var bodyParser = require('body-parser');
+var util = require("util");
+var events = require('events');
+
 
 
 var totalClients = 0;
@@ -21,10 +24,9 @@ var port = process.argv[2] || 8010;
 
 var id = 0;
 
-var clients_per_room = {};
 
 
-http.globalAgent.maxSockets = 10000;
+http.globalAgent.maxSockets = 30000;
 
 var msgSend = 0;
 
@@ -45,7 +47,8 @@ var statsId = setInterval(function () {
 
 }, 1500);
 
-
+var eventEmitter = new events.EventEmitter();
+eventEmitter.setMaxListeners(20000);
 console.log('Server starting...');
 
 // Setup routes
@@ -95,14 +98,36 @@ app.get('/', function routeHome(req, res){
 
 
 
+app.get('/test', function msg(req, res, next){
+
+    console.log("Test call")
+    res.send("---")
+});
+
 
 
 app.post('/free-clients', function msg(req, res, next){
 
+    var allRooms = _.keys(rooms);
+
     console.log("Free Clients.......");
+
     
-    clients_per_room = {};
+    _.each(allRooms, function(roomName, i){
+        console.log("Number of listerners", eventEmitter.listeners(roomName).length);
+        eventEmitter.removeAllListeners(roomName);    
+        console.log("Number of listerners", eventEmitter.listeners(roomName).length);
+    });
+
+    global.gc();
+
+    console.log("Memory",  process.memoryUsage() );
+
     res.send("CLIENTS_CLEARED_DONE");
+
+
+
+
 
 });
 
@@ -110,57 +135,44 @@ app.post('/msg', function msg(req, res, next){
     
     var roomId = req.body["msg"];
     
-    async.each(clients_per_room[roomId], function(client, callback){
-        
-        var receivedTime = new Date().getTime();
+    eventEmitter.emit(roomId);
 
-        client.write("retry: 10000\n");
-        client.write("event: "+(roomId)+"\n");
-        client.write('data: '+(receivedTime)+'\n\n');
-
-        msgSend++;
-        setTimeout( function(){
-            callback();
-        }, 500);
-        
-
-    }, function(results){
-        
-        process.nextTick(function(d, i){
-            res.send(roomId);
-        });
-        
-
-    });
-
-
+    res.send(roomId);
 
 });
 
 
-
+var rooms = {};
 
 app.get('/eventsource', function routeEventsource(req, res, next){
     //console.log('>> EventSource connected' );
 
 
     var room = req.headers["room"];
-    var cientId = req.headers["clientid"];
+    var clientId = req.headers["clientid"];
 
+
+    res.room = room;
+    res.clientId = clientId;
     
-
-    if(clients_per_room[room]){
-        clients_per_room[room].push(res);
-    }else{
-        clients_per_room[room] = [res];
-    }
+    rooms[room+''] = 0;
 
     totalClients++;
 
     //req.socket.setTimeout(Infinity);
 
+    res.react = (function(){
+        
+        var receivedTime = new Date().getTime();
+        msgSend++;
+        this.write("retry: 10000\n");
+        this.write("event: "+(this.room)+"\n");
+        this.write('data: '+(receivedTime)+'\n\n');
 
-    //req.socket.setNoDelay(true);
+    }).bind(res);
+
+    eventEmitter.on(room+"", res.react);
+        
     res.setTimeout( 1000 * 60 * 60 * 24);
     res.statusCode = 200;
     res.setHeader('Content-Type', 'text/event-stream');
@@ -169,15 +181,19 @@ app.get('/eventsource', function routeEventsource(req, res, next){
     
     res.write("retry: 10000\n");
     res.write("event: connected\n");
-    res.write('data: '+(cientId)+'\n\n');
+    res.write('data: '+(clientId)+'\n\n');
 
     
     id++;
 
     // If the client disconnects, let's not leak any resources
     res.on('close',  function() {
-        console.log('[x] Res disconnected!');
+        //console.log('[x] Res disconnected!', this.statusCode, this.room, "Client: ",this.clientId);
         totalClients--;
+        eventEmitter.removeListener(this.room, function(d, i){
+            console.log("Removed EventListener")
+        });
+
         
     });
 

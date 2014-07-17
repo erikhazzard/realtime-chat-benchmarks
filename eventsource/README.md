@@ -41,19 +41,29 @@ Gateaway timeouts
 
 ## Results
 
+### Memory Footprint
+
+| Type    | Test                | Machine    | Number Clients  | Heap Start | End   |Delta  | Env   |
+|---------|---------------------|------------|----------------:| ----------:|-------|------:|-------|
+| Normal  | Create Clients      | roundrobin |           1000  | 27MB       | 155MB | 128MB | Local |
+| Normal  | Finished Msg send.  | roundrobin |           1000  |            |       |       | Local |
+| Normal  | Create Clients      | roundrobin |           15000 | 27MB       | 269MB | 242MB | Local |
+
 ### How long does it takes to connect clients?
 
 Running the script: ```$node client-profiling.js NR_OF_CLIENTS NR_OF_ITERATIONS MQTT_URI```
 
-| Type    | Test           | Machine    | Number Clients  | Time in seconds | Protocol    | Env   |
-|---------|----------------|------------|----------------:|----------------:|-------------|-------|
-| Normal  | Create Clients | roundrobin |           1000  | 1.512  S        | EventSource | Local |
-| Normal  | Create Clients | roundrobin |           2000  | 2.249  S        | EventSource | Local |
-| Normal  | Create Clients | roundrobin |           3000  | 17.598 S        | EventSource | Local |
-| Normal  | Create Clients | roundrobin |           4000  | 25.09  S        | EventSource | Local |
-| Normal  | Create Clients | roundrobin |           5000  | 46.373 S        | EventSource | Local |
-| Normal  | Create Clients | roundrobin |           6000  | 60.635 S        | EventSource | Local |
-| Normal  | Create Clients | roundrobin |          10000  | 91.16  S        | EventSource | Local |
+| Type    | Test           | Machine    | Number Clients  | Time in seconds  | Protocol    | Env   |
+|---------|----------------|------------|----------------:|-----------------:|-------------|-------|
+| Normal  | Create Clients | roundrobin |           1000  | 1.512   S        | EventSource | Local |
+| Normal  | Create Clients | roundrobin |           2000  | 2.249   S        | EventSource | Local |
+| Normal  | Create Clients | roundrobin |           3000  | 17.598  S        | EventSource | Local |
+| Normal  | Create Clients | roundrobin |           4000  | 25.09   S        | EventSource | Local |
+| Normal  | Create Clients | roundrobin |           5000  | 46.373  S        | EventSource | Local |
+| Normal  | Create Clients | roundrobin |           6000  | 60.635  S        | EventSource | Local |
+| Normal  | Create Clients | roundrobin |          10000  | 91.16   S        | EventSource | Local |
+| Normal  | Create Clients | roundrobin |          15000  | 5635    S        | EventSource | Local |
+| Normal  | Create Clients | roundrobin |          15000  | 211.963 S        | EventSource | Local |
 
 ### How long does it takes to send 1 message to x clients? (x rooms a 6 people)
 
@@ -79,6 +89,8 @@ Payload: Javascript Timestamp
 | Normal      | Send Msg         | roundrobin   | 1 per room   | 6000       | 10           | 1.49 s   | 387.154 s   |  3.50 %  | 61466  |
 | Normal      | Send Msg         | roundrobin   | 1 per room   | 10000      | 1            | 2.82 s   | 188.652 s   |  3.84 %  | 10477  |
 | Normal      | Send Msg         | roundrobin   | 1 per room   | 10000      | 2            | 4.80 s   | 310.41 s    |  4.78 %  | 25130  |
+| Normal      | Send Msg         | roundrobin   | 1 per room   | 15000      | 1            | 5.64 s   | 1013.484 s  |  4.73 %  | 17453  |
+| Normal      | Send Msg         | roundrobin   | 1 per room   | 20000      | 1            | 7.23 s   | 469.806 s   |  3.91 %  | 21818  |
 
 
 

@@ -130,71 +130,71 @@ async.eachLimit(_.range(NROFCLIENTS), 200, function(index, callback){
 
 function startSendingMessages(){
   
-   // setTimeout(function(d, i){
+   setTimeout(function(d, i){
       
-   //    var intervalId = setInterval(function(){
+      var intervalId = setInterval(function(){
 
-   //            if(iterationsDone < ITERATIONS ){
+              if(iterationsDone < ITERATIONS ){
                 
-   //              _.each(clients, function(client, i){
+                _.each(clients, function(client, i){
 
-   //              var roomId = "r-"+Math.floor(i / MAX_PEOPLE_ROOM);
-   //              //console.log("Send a response", client.roomId);
-   //              var url = "http://localhost:8010/msg";
-   //              request.post(url, {form: {msg: client.roomId, time: new Date().getTime() }} , function(err, res){
-   //                if(err){
-   //                  return console.log("An error occured", JSON.stringify(err));
-   //                }
+                var roomId = "r-"+Math.floor(i / MAX_PEOPLE_ROOM);
+                //console.log("Send a response", client.roomId);
+                var url = "http://localhost:8010/msg";
+                request.post(url, {form: {msg: client.roomId, time: new Date().getTime() }} , function(err, res){
+                  if(err){
+                    return console.log("An error occured", JSON.stringify(err));
+                  }
                 
-   //                //console.log("Received a response", res.body, "received_msg", received_msg);
-   //              });
+                  //console.log("Received a response", res.body, "received_msg", received_msg);
+                });
 
-   //            });
+              });
 
 
-   //            }else{
-   //              console.log("Finished all iterations");
-   //              clearInterval(intervalId);
+              }else{
+                console.log("Finished all iterations");
+                clearInterval(intervalId);
 
-   //                var finishedTime = new Date().getTime();  
-   //                var total = finishedTime - startTime;
+                  var finishedTime = new Date().getTime();  
+                  var total = finishedTime - startTime;
 
-   //              helpers.calcAvg( logFileTime, 0, function(val){
-   //                console.log("Time to connect all clients: ", clientInitTime);
-   //                console.log("Average time to send one message to a room", Math.round(val * 100) / 100, (val/1000).toFixed(2), "(s)");
-   //                console.log("Message Received: ", received_msg);
-   //                console.log("Total time: ", total/1000," seconds");
+                helpers.calcAvg( logFileTime, 0, function(val){
+                  console.log("Time to connect all clients: ", clientInitTime);
+                  console.log("Average time to send one message to a room", Math.round(val * 100) / 100, (val/1000).toFixed(2), "(s)");
+                  console.log("Message Received: ", received_msg);
+                  console.log("Total time: ", total/1000," seconds");
 
-   //                helpers.calcAvg( logFileCpuAvg, 0, function(cpuAvg){
-   //                  console.log("CPU Avg: ", cpuAvg.toFixed(2))
+                  helpers.calcAvg( logFileCpuAvg, 0, function(cpuAvg){
+                    console.log("CPU Avg: ", cpuAvg.toFixed(2))
                     
-   //                  request.post("http://"+HOST+"/free-clients", {} , function(err, res){
-   //                    if(err){
-   //                      console.log("Could not free clients", err);
-   //                      process.exit(0);
-   //                      return ;
+                    request.post("http://"+HOST+"/free-clients", {} , function(err, res){
+                      if(err){
+                        console.log("Could not free clients", err);
+                        process.exit(0);
+                        return ;
 
-   //                    }
-   //                    console.log("Cleared clients: ", res.body);
-   //                    process.exit(0);
-   //                  });
+                      }
+                      console.log("Cleared clients: ", res.body);
+                      process.exit(0);
+                    });
 
 
-   //                  //fs.writeFile(logFileTime, "", function (err) { if (err) return console.log(err);});
+                    //fs.writeFile(logFileTime, "", function (err) { if (err) return console.log(err);});
                     
 
-   //                });
+                  });
 
                   
-   //              });
+                });
 
                 
-   //            }
+              }
         
-   //    }, 1000);
+      }, 1000);
 
 
-   //  }, 1000);
+    }, 1000);
 
 
 
