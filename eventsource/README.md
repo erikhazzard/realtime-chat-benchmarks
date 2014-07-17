@@ -52,6 +52,8 @@ Running the script: ```$node client-profiling.js NR_OF_CLIENTS NR_OF_ITERATIONS 
 | Normal  | Create Clients | roundrobin |           3000  | 17.598 S        | EventSource | Local |
 | Normal  | Create Clients | roundrobin |           4000  | 25.09  S        | EventSource | Local |
 | Normal  | Create Clients | roundrobin |           5000  | 46.373 S        | EventSource | Local |
+| Normal  | Create Clients | roundrobin |           6000  | 60.635 S        | EventSource | Local |
+| Normal  | Create Clients | roundrobin |          10000  | 91.16  S        | EventSource | Local |
 
 ### How long does it takes to send 1 message to x clients? (x rooms a 6 people)
 
@@ -72,6 +74,11 @@ Payload: Javascript Timestamp
 | Normal      | Send Msg         | roundrobin   | 1 per room   | 3000       | 10           | 0.11 s   | 42.7 s      |  3.32 %  | 30450  |
 | Normal      | Send Msg         | roundrobin   | 1 per room   | 3000       | 100          | 0.35 s   | 500.89 s    |  3.28 %  | 303534 |
 | Normal      | Send Msg         | roundrobin   | 1 per room   | 4000       | 100          | 0.76 s   | 1054.449 s  |  3.17 %  | 406597 |
+| Normal      | Send Msg         | roundrobin   | 1 per room   | 6000       | 1            | 0.16 s   | 87.676 s    |  7.39 %  | 6228   |
+| Normal      | Send Msg         | roundrobin   | 1 per room   | 6000       | 2            | 1.49 s   | 129.514 s   |  6.51 %  | 12156  |
+| Normal      | Send Msg         | roundrobin   | 1 per room   | 6000       | 10           | 1.49 s   | 387.154 s   |  3.50 %  | 61466  |
+| Normal      | Send Msg         | roundrobin   | 1 per room   | 10000      | 1            | 2.82 s   | 188.652 s   |  3.84 %  | 10477  |
+| Normal      | Send Msg         | roundrobin   | 1 per room   | 10000      | 2            | 4.80 s   | 310.41 s    |  4.78 %  | 25130  |
 
 
 
