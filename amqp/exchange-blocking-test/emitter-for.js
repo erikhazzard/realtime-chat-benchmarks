@@ -38,34 +38,15 @@ connection.on('ready', function onConnectionReady() {
         confirm: true // true for publish callback
     }, function (exchange) {
 
-        async.eachSeries(_.range(NUM_MESSAGES), function each(i, cb) {
-            // Using each series as opposed to each because publishing all of
-            // the messages at the same time seems to block (probably because
-            // of node but idk)
-
+        for (var i = 0; i < NUM_MESSAGES; i++) {
             exchange.publish(ROUTING_KEY, getMessage(), {
                 contentType: 'application/json'
             }, function onPublished() {
                 console.log("Sent out message #" + i);
-                cb();
+                // cb();
             });
+        }
 
-        }, function onCompleteAsync() {
-            console.log("Sent out " + NUM_MESSAGES + " messages. Exiting...");
-
-            process.exit(1);
-
-            /*
-            exchange.publish(ROUTING_KEY, {
-                date: new Date().getTime()
-            }, {
-                contentType: 'application/json'
-            }, function onPublished() {
-                console.log("Sent out last small msg");
-                process.exit(1);
-            });
-            */
-
-        });
+        console.log("Fired off " + NUM_MESSAGES + " publish calls.");
     });
 });

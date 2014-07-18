@@ -9,15 +9,18 @@
 
 var amqp = require('amqp');
 
-var EXCHANGE_NAME = 'test',
-    ROUTING_KEY = 'route';
+var EXCHANGE_NAME = 'test';
+var ROUTING_KEY = 'route';
+var AMQP_HOST = 'localhost';
 
-var numMessagesReceived = 0,
-    lastMessageReceivedTime;
+var numMessagesReceived = 0;
+var lastMessageReceivedTime;
 
-var connection = amqp.createConnection({ host: 'localhost' });
+var connection = amqp.createConnection({ host: AMQP_HOST });
 
 connection.on('ready', function onConnectionReady() {
+
+    console.log("Connection to AMQP established @ " + AMQP_HOST);
 
     connection.exchange(EXCHANGE_NAME, {
         type: 'topic',
