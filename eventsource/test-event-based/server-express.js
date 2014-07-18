@@ -17,18 +17,14 @@ var util = require("util");
 var events = require('events');
 
 
-
 var totalClients = 0;
-
 var port = process.argv[2] || 8010;
-
 var id = 0;
-
-
-
+var msgSend = 0;
+var eventEmitter = new events.EventEmitter();
+eventEmitter.setMaxListeners(20000);
 http.globalAgent.maxSockets = 30000;
 
-var msgSend = 0;
 
 
 function format (val){
@@ -47,8 +43,7 @@ var statsId = setInterval(function () {
 
 }, 1500);
 
-var eventEmitter = new events.EventEmitter();
-eventEmitter.setMaxListeners(20000);
+
 console.log('Server starting...');
 
 // Setup routes
@@ -100,8 +95,10 @@ app.get('/', function routeHome(req, res){
 
 app.get('/test', function msg(req, res, next){
 
-    console.log("Test call")
-    res.send("---")
+    console.log("Test call");
+
+
+    res.send("---");
 });
 
 
@@ -118,8 +115,8 @@ app.post('/free-clients', function msg(req, res, next){
         eventEmitter.removeAllListeners(roomName);    
         console.log("Number of listerners", eventEmitter.listeners(roomName).length);
     });
-
-    global.gc();
+    heapdump.writeSnapshot('./' + Date.now() + '.heapsnapshot');
+    //global.gc();
 
     console.log("Memory",  process.memoryUsage() );
 
@@ -190,10 +187,9 @@ app.get('/eventsource', function routeEventsource(req, res, next){
     res.on('close',  function() {
         //console.log('[x] Res disconnected!', this.statusCode, this.room, "Client: ",this.clientId);
         totalClients--;
-        eventEmitter.removeListener(this.room, function(d, i){
-            console.log("Removed EventListener")
-        });
-
+        console.log(this.room ,"Before: Nr of listeners:: ", eventEmitter.listeners(this.room).length)
+        eventEmitter.removeListener(this.room, this.react);
+        console.log(this.room , "After Nr of listeners:: ", eventEmitter.listeners(this.room).length)
         
     });
 
