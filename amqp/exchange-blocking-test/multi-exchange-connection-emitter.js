@@ -9,13 +9,18 @@
 
 var amqp = require('amqp');
 var fs = require('fs');
+var async = require('async');
+var _ = require('lodash');
 
-var data = (JSON.parse(fs.readFileSync('./data.json', 'utf8'))).message;
+var fileContents = fs.readFileSync('./data.json', 'utf8');
+var data = JSON.parse(fileContents).message;
+
+// var connectionPool = require('../util/exchangeConnectionPool');
 
 var EXCHANGE_NAME = 'test',
     ROUTING_KEY = 'route',
-    NUM_MESSAGES = 20,
-    NUM_EXCHANGES = 5;
+    NUM_MESSAGES = 100,
+    NUM_EXCHANGES = 10;
 
 var exchanges = [];
 
@@ -23,7 +28,7 @@ function getMessage() {
     // returns a message with a lot of data and the current time
     return {
         date: new Date().getTime(),
-        stuff: data
+        stuff: data + ("x" * (Math.floor(Math.random() * 20)))
     };
 }
 
@@ -31,28 +36,33 @@ var connection = amqp.createConnection({ host: 'localhost' });
 
 connection.on('ready', function onConnectionReady() {
 
-    for (var i = 0; i < NUM_EXCHANGES; i++) {
-        (function (i) {
-            connection.exchange(EXCHANGE_NAME, {
-                type: 'topic',
-                autoDelete: false
-            }, function (exchange) {
-                exchanges.push(exchange);
+    async.each(_.range(NUM_EXCHANGES), function(i, cb) {
+        // Use async here to control when the next exchange is set up because
+        // otherwise we run into the issue where the 'ready' callback is
+        // fired a bunch of times
+        // See: https://github.com/postwait/node-amqp/issues/255
+        console.log("Setting up exchange #" + i + "...");
+        connection.exchange(EXCHANGE_NAME, {
+            type: 'topic',
+            autoDelete: false
+        }, function doneSetupExchange(exchange) {
+            exchanges.push(exchange);
 
-                if (exchanges.length >= NUM_EXCHANGES) {
-                    console.log("Done setting up exchanges.");
+            console.log("Done setting up exchange #" + i);
+            cb();
+        });
+    }, function doneSetupExchanges() {
+        for (var j = 0; j < NUM_MESSAGES; j++) {
+            var exchangeIndex = j % NUM_EXCHANGES;
 
-                    for (var j = 0; j < NUM_MESSAGES; j++) {
-                        var exchangeIndex = j % NUM_EXCHANGES;
-
-                        exchanges[j].publish(ROUTING_KEY, getMessage(), {
-                            contentType: 'application/json'
-                        });
-
-                        console.log("Message published to exchange connection #" + exchangeIndex);
-                    }
-                }
+            exchanges[exchangeIndex].publish(ROUTING_KEY,
+                getMessage(), {
+                contentType: 'application/json'
             });
-        })(i);
-    }
+
+            console.log("Message published to exchange connection #" + exchangeIndex);
+        }
+
+        process.exit(1);
+    });
 });
