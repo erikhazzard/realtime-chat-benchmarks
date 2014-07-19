@@ -83,10 +83,14 @@ Clustering the emitter script *and* using `async`'s `eachSeries` actually slows 
 
 With `eachSeries`:
 
-60 messages total, clustered: 7986ms
+60 messages total, clustered: 7986ms (exhibits 'blocking')
 60 messages total, non-clustered: 3405ms
 
 Using just a for loop:
 
-60 messages total, clustered: 8358ms
-60 messages total, non-clustered: 10005ms
+60 messages total, clustered: 11000ms (exhibits 'blocking')
+60 messages total, non-clustered: 10005ms (exhibits 'blocking')
+
+My thoughts are that the same issues that affect the test using 60 messages, non-clustered, and in a for loop are also affecting the 60 messages total, clustered, using `eachSeries`; in each case a lot of messages are being published to the exchange at a time
+
+Clustering the receiver script and running the non-clustered emitter script that uses `eachSeries` results in much more optimal message/receive times. On average around .4ms delay between a message being sent and a message being received.
