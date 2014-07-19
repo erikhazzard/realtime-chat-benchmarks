@@ -34,6 +34,7 @@
     "sockjs-client-node": "^0.1.1",
     "sockjs-client-ws": "^0.1.0",
     "sse": "0.0.5",
+    "toobusy": "^0.2.4",
     "usage": "^0.4.10",
     "winston": "^0.7.3",
     "ws": "^0.4.31",
