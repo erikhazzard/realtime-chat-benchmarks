@@ -137,4 +137,30 @@ https://hacks.mozilla.org/2013/01/building-a-node-js-server-that-wont-melt-a-nod
 * http://blog.arc90.com/2012/03/05/profiling-node-programs-on-mac-os-x/
 
 
+27mb
+
+EADDRNOTAVAIL
+ETIMEDOUT
+EADDRNOTAVAIL
+
+
+
+* Disconnect clients from server
+
+
+
+
+## Memory leaks
+* https://github.com/joyent/node/issues/5345
+* http://simonmcmanus.wordpress.com/2013/01/03/forcing-garbage-collection-with-node-js-and-v8/
+* [Good Thread about RSS Leaks](* https://github.com/einaros/ws/issues/43)
+* [Walmart Memory Leak](http://www.joyent.com/blog/walmart-node-js-memory-leak)
+* https://github.com/bnoordhuis/node-heapdump
+
+
+* Node event stuff
+* Manual GC clear
+
+
+
 
