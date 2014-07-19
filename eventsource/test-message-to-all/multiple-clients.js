@@ -20,9 +20,9 @@ http.globalAgent.maxSockets = Infinity;
 
 //Command line arguments
 var NROFCLIENTS = process.argv[2] || 1;
-var PORT = process.argv[3] || 8010;
+var PORT = process.argv[4] || 8010;
 var HOST = "localhost:"+PORT;
-var ITERATIONS = process.argv[4] || 1;
+var ITERATIONS = process.argv[3] || 1;
 
 console.log("Number of Clients: ", NROFCLIENTS);
 console.log("Number of Iterations: ", ITERATIONS);

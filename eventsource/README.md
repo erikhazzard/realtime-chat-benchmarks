@@ -43,10 +43,17 @@ Gateaway timeouts
 
 ### Memory Footprint
 
+This runs the server on port 8010: ```$ node test-message-to-all/server-express.js 8010```
+
+and connect for instance 1000 clients and do 2 iterations of message sending. Connect to port 8010.
+
+```$ node test-message-to-all/multiple-simple.js 1000 2 8010```
+
+
 | Type    | Test                | Machine    | Number Clients  | Heap Start | End   |Delta  | Env   |
 |---------|---------------------|------------|----------------:| ----------:|-------|------:|-------|
 | Normal  | Create Clients      | roundrobin |           1000  | 27MB       | 155MB | 128MB | Local |
-| Normal  | Finished Msg send.  | roundrobin |           1000  |            |       |       | Local |
+| Normal  | Finished Msg send.  | roundrobin |           1000  | 155MB      | 155MB |       | Local |
 | Normal  | Create Clients      | roundrobin |           15000 | 27MB       | 269MB | 242MB | Local |
 
 ### How long does it takes to connect clients?
