@@ -3,7 +3,8 @@
  *  Emits large messages to AMQP to see whether or not they block
  *  when they all publish to one exchange.
  *
- *  Uses async to publish messages synchronously.
+ *  Uses async to publish messages synchronously. The routing key is
+ *  dependent upon the number of CPUs.
  *
  */
 
@@ -15,6 +16,7 @@ var async = require('async');
 var filename = './data.json'; // > 10 MB
 var fileContents = fs.readFileSync(filename, 'utf8');
 var data = (JSON.parse(fileContents)).message;
+var numCPUs = require('os').cpus().length;
 
 var EXCHANGE_NAME = 'test';
 var ROUTING_KEY = 'route';
@@ -43,10 +45,11 @@ connection.on('ready', function onConnectionReady() {
             // the messages at the same time seems to block (probably because
             // of node but idk)
 
-            exchange.publish(ROUTING_KEY, getMessage(), {
+            exchange.publish(ROUTING_KEY + ((i % numCPUs) + 1), getMessage(), {
                 contentType: 'application/json'
             }, function onPublished() {
-                console.log("Sent out message #" + i);
+                console.log("Sent out message #" + i + " to route " + ((i % numCPUs) + 1));
+
                 cb();
             });
 
