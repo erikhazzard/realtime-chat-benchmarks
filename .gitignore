@@ -4,4 +4,5 @@ node_modules
 dump.rdb
 # logs/ keep folder
 logs/*
+*.heapsnapshot
 *.log

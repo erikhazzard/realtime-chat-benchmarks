@@ -1,19 +1,6 @@
-/* =========================================================================
- * 
- * server-simple.js
- *  Simple express - eventsource server
- *
- *  ======================================================================== */
 var express = require('express');
-var winston = require('winston');
-var expressWinston = require('express-winston');
-var compression = require('compression');
-var colors = require('colors');
 var http = require('http');
-var _ = require('lodash');
-var async = require("async");
 var bodyParser = require('body-parser');
-var util = require("util");
 var events = require('events');
 
 
@@ -32,12 +19,12 @@ function format (val){
 }
 
 var statsId = setInterval(function () {
-    console.log('Memory Usage :: '.bold.green.inverse +
-        ("\tRSS: " + format(process.memoryUsage().rss)).blue +
-        ("\tHeap Total: " + format(process.memoryUsage().heapTotal)).yellow +
-        ("\tHeap Used: " + format(process.memoryUsage().heapUsed)).magenta +
-        ("\t\tNr Clients: " + (""+totalClients).white) +
-        (("\t\Msg Sent: " + ""+msgSend).cyan)
+    console.log('Memory Usage :: ' +
+        ("\tRSS: " + format(process.memoryUsage().rss)) +
+        ("\tHeap Total: " + format(process.memoryUsage().heapTotal)) +
+        ("\tHeap Used: " + format(process.memoryUsage().heapUsed)) +
+        ("\t\tNr Clients: " + (""+totalClients)) +
+        (("\t\Msg Sent: " + ""+msgSend))
     );
 
 
@@ -55,8 +42,6 @@ app.locals.pretty = true;
 
 app.use(bodyParser());
 
-//// CORs support
-app.use(compression());
 app.use(function(req, res, next){
     // Enable CORs support
     res.header('Access-Control-Allow-Origin', '*');
@@ -68,58 +53,27 @@ app.use(function(req, res, next){
 });
 
 
-// Log requests
-// var routeLogTransports = 
-// app.use(expressWinston.logger({
-//     transports: [
-//         new winston.transports.Console({
-//             json: false, colorize: true
-//         })
-//     ],
-//     meta: true,
-//     level: 'verbose'
-// }));
 app.engine('html', require('ejs').renderFile);
 app.set('views', __dirname); 
 
-// --------------------------------------
-//
-// App routes
-//
-// --------------------------------------
-app.get('/', function routeHome(req, res){
-    return res.render('html-client.html');
-});
-
-
-
-app.get('/test', function msg(req, res, next){
-
-    console.log("Test call");
-
-
-    res.send("---");
-});
-
-
-
 app.post('/free-clients', function msg(req, res, next){
 
-    var allRooms = _.keys(rooms);
+    
+
+    var allRooms = Object.keys(rooms);
 
     console.log("Free Clients.......");
 
-    
-    _.each(allRooms, function(roomName, i){
-        console.log("Number of listerners", eventEmitter.listeners(roomName).length);
+    allRooms.forEach(function(roomName, i){
+        console.log("Before: Number of listerners", eventEmitter.listeners(roomName).length);
         eventEmitter.removeAllListeners(roomName);    
-        console.log("Number of listerners", eventEmitter.listeners(roomName).length);
+        console.log("After: Number of listerners", eventEmitter.listeners(roomName).length);
     });
-    heapdump.writeSnapshot('./' + Date.now() + '.heapsnapshot');
-    //global.gc();
+
 
     console.log("Memory",  process.memoryUsage() );
-
+    rooms = [];
+    allRooms = [];
     res.send("CLIENTS_CLEARED_DONE");
 
 
@@ -131,9 +85,7 @@ app.post('/free-clients', function msg(req, res, next){
 app.post('/msg', function msg(req, res, next){
     
     var roomId = req.body["msg"];
-    
     eventEmitter.emit(roomId);
-
     res.send(roomId);
 
 });
@@ -142,9 +94,7 @@ app.post('/msg', function msg(req, res, next){
 var rooms = {};
 
 app.get('/eventsource', function routeEventsource(req, res, next){
-    //console.log('>> EventSource connected' );
-
-
+    
     var room = req.headers["room"];
     var clientId = req.headers["clientid"];
 
@@ -186,21 +136,22 @@ app.get('/eventsource', function routeEventsource(req, res, next){
     // If the client disconnects, let's not leak any resources
     res.on('close',  function() {
         //console.log('[x] Res disconnected!', this.statusCode, this.room, "Client: ",this.clientId);
+        console.log('[x] Res disconnected!', this.statusCode, this.room, "Client: ",this.clientId);
         totalClients--;
         console.log(this.room ,"Before: Nr of listeners:: ", eventEmitter.listeners(this.room).length)
         eventEmitter.removeListener(this.room, this.react);
         console.log(this.room , "After Nr of listeners:: ", eventEmitter.listeners(this.room).length)
         
+        
     });
-
-    
+ 
 
 });
 
 // Then, handle missing pages
 // ----------------------------------
 app.use(function handleError(err, req, res, next){
-    winston.error('(in handleError) Error with request: ' + req.url + ' | ' + err, {
+    console.error('(in handleError) Error with request: ' + req.url + ' | ' + err, {
         error: err
     });
     // Don't set status for cloudfront
@@ -210,7 +161,7 @@ app.use(function handleError(err, req, res, next){
 // Finally, handle any errors
 // -----------------------------------
 app.use(function handleMissingPage(req, res, next){
-    winston.error('Invalid page requested: ' + req.url);
+    console.error('Invalid page requested: ' + req.url);
     res.send(404, 'Invalid page');
 });
 console.log("Running on port: ", port);

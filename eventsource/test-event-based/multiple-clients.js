@@ -24,6 +24,8 @@ var PORT = process.argv[3] || 8010;
 var HOST = "localhost:"+PORT;
 var ITERATIONS = process.argv[4] || 1;
 
+ALL_CLIENTS = [];
+
 console.log("Number of Clients: ", NROFCLIENTS);
 console.log("Number of Iterations: ", ITERATIONS);
 console.log("Connect to port: ", PORT);
@@ -69,9 +71,11 @@ async.eachLimit(_.range(NROFCLIENTS), 200, function(index, callback){
   };
 
     
-  es.addEventListener("connected", function(rIfd, clientId){
+  es.addEventListener("connected", (function(rIfd, clientId){
     connectedClients++;
-    
+      
+    ALL_CLIENTS.push(this);
+
     if(connectedClients == NROFCLIENTS){
 
 
@@ -82,7 +86,7 @@ async.eachLimit(_.range(NROFCLIENTS), 200, function(index, callback){
     }
 
 
-  });
+  }).bind(es) );
 
 
 
@@ -176,6 +180,13 @@ function startSendingMessages(){
 
                       }
                       console.log("Cleared clients: ", res.body);
+
+                      console.log("NUMBER OF CLIENTS::::::", ALL_CLIENTS.length);
+
+                      _.each(ALL_CLIENTS, function(d, i){
+                        d.close();
+                      })
+
                       process.exit(0);
                     });
 
